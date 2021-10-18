@@ -31,6 +31,8 @@ import ListStyle from '@ckeditor/ckeditor5-list/src/liststyle.js';
 
 import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
 
+import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
+
 
 
 
@@ -230,6 +232,7 @@ class ListStartAttribute extends Plugin {
 
 export default class MyEditor {
     constructor(props) {
+        console.log(props,this)
         Object.assign(
             this, {
                 id: 'editor-area',
@@ -324,6 +327,7 @@ export default class MyEditor {
         })
             .then((editor) => {
                 console.log('Editor was initialized', editor);
+                CKEditorInspector.attach(editor);
             })
             .catch((error) => {
                 console.error(error.stack);
