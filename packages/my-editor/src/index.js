@@ -29,6 +29,8 @@ import IndentBlock from '@ckeditor/ckeditor5-indent/src/indentblock.js';
 
 import ListStyle from '@ckeditor/ckeditor5-list/src/liststyle.js';
 
+import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
+
 
 
 
@@ -67,23 +69,162 @@ function ClipboardButtons(editor) {
 }
 
 function SpecialCharactersArrowsExtended(editor) {
-    editor.plugins.get('SpecialCharacters').addItems('常用', [{
+    editor.plugins.get('SpecialCharacters').addItems('常用', [
+        {
             title: '大括號',
-            character: '{}'
+            character: '【】',
+        },
+        {
+            title: '--',
+            character: '{}',
         },
         {
             title: 'simple arrow up',
-            character: '↑'
+            character: '↑',
         },
         {
             title: 'simple arrow right',
-            character: '→'
+            character: '→',
         },
         {
             title: 'simple arrow down',
-            character: '↓'
-        }
+            character: '↓',
+        },
     ]);
+}
+
+class InsertTextIcon1 extends Plugin {
+    init() {
+        console.log('執行')
+        const editor = this.editor;
+
+        editor.ui.componentFactory.add('InsertTextIcon1', (locale) => {
+            const view = new ButtonView(locale);
+
+            view.set({
+                label: '【】',
+                withText: true,
+                tooltip: true,
+                // icon: imageIcon,
+                // tooltip: true,
+            });
+
+            // Callback executed once the image is clicked.
+            view.on('execute', () => {
+                // const imageURL = prompt('Image URL')
+                editor.model.change((writer) => {
+                    const insertPosition =
+                        editor.model.document.selection.getFirstPosition();
+                    writer.insertText('【】', insertPosition);
+                });
+            });
+
+            return view;
+        });
+        editor.ui.componentFactory.add('InsertTextIcon2', (locale) => {
+            const view = new ButtonView(locale);
+
+            view.set({
+                label: '，',
+                withText: true,
+                tooltip: true,
+                // icon: imageIcon,
+                // tooltip: true,
+            });
+
+            // Callback executed once the image is clicked.
+            view.on('execute', () => {
+                // const imageURL = prompt('Image URL')
+                editor.model.change((writer) => {
+                    const insertPosition =
+                        editor.model.document.selection.getFirstPosition();
+                    writer.insertText('，', insertPosition);
+                });
+            });
+
+            return view;
+        });
+    }
+}
+class InsertTextIcon2 extends Plugin {
+    init() {
+        console.log('執行');
+        const editor = this.editor;
+        
+        editor.ui.componentFactory.add('InsertTextIcon2', (locale) => {
+            const view = new ButtonView(locale);
+
+            view.set({
+                label: '，',
+                withText: true,
+                tooltip: true,
+                // icon: imageIcon,
+                // tooltip: true,
+            });
+
+            // Callback executed once the image is clicked.
+            view.on('execute', () => {
+                // const imageURL = prompt('Image URL')
+                editor.model.change((writer) => {
+                    const insertPosition =
+                        editor.model.document.selection.getFirstPosition();
+                    writer.insertText('，', insertPosition);
+                });
+            });
+
+            return view;
+        });
+    }
+}
+
+class ListStartAttribute extends Plugin {
+    init() {
+        console.log('ListStartAttribute is init');
+        const editor = this.editor;
+
+        // 1.extend schema
+        editor.model.schema.extend('listItem', { allowAttributes: 'start' });
+
+        // 2.set conversion up/down
+        editor.conversion.for('downcast').add((dispatcher) => {
+            dispatcher.on('attribute', (evt, data, conversionApi) => {
+                console.log('data', data.item, data.item.name);
+                if (data.item.name != 'listItem') {
+                    return;
+                }
+
+                const viewWriter = conversionApi.writer;
+                const viewElement = conversionApi.mapper.toViewElement(
+                    data.item
+                );
+                const containerElement = viewElement.parent;
+
+                if (
+                    data.attributeNewValue &&
+                    !containerElement.getAttribute('start')
+                ) {
+                    viewWriter.setAttribute(
+                        data.attributeKey,
+                        data.attributeNewValue,
+                        containerElement
+                    );
+                }
+            });
+        });
+
+        editor.conversion.for('upcast').attributeToAttribute({
+            model: {
+                name: 'listItem',
+                key: 'start',
+            },
+            view: {
+                name: 'ol',
+                key: 'start',
+            },
+            converterPriority: 'low',
+        });
+        editor.execute('listStyle', { type: 'lower-roman' });
+    }
 }
 
 
@@ -91,7 +232,7 @@ export default class MyEditor {
     constructor(props) {
         Object.assign(
             this, {
-                id: 'editor',
+                id: 'editor-area',
             },
             props
         );
@@ -127,6 +268,9 @@ export default class MyEditor {
                 SpecialCharactersArrowsExtended,
                 ClipboardButtons,
                 ListStyle,
+                InsertTextIcon1,
+                InsertTextIcon2,
+                ListStartAttribute,
             ],
             toolbar: {
                 items: [
@@ -158,9 +302,11 @@ export default class MyEditor {
                     'test2',
                     'test3',
                     '|',
+                    'InsertTextIcon1',
+                    'InsertTextIcon2',
+                    '|',
                     'outdent',
                     'indent',
-
                 ],
                 viewportTopOffset: 10,
                 shouldNotGroupWhenFull: true,
