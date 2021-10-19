@@ -13,7 +13,6 @@ import FontFamily from '@ckeditor/ckeditor5-font/src/fontfamily.js';
 import FontSize from '@ckeditor/ckeditor5-font/src/fontsize.js';
 import Heading from '@ckeditor/ckeditor5-heading/src/heading';
 import Link from '@ckeditor/ckeditor5-link/src/link';
-import List from '@ckeditor/ckeditor5-list/src/list';
 import Underline from '@ckeditor/ckeditor5-basic-styles/src/underline.js';
 
 import SpecialCharacters from '@ckeditor/ckeditor5-special-characters/src/specialcharacters.js';
@@ -26,13 +25,24 @@ import SpecialCharactersText from '@ckeditor/ckeditor5-special-characters/src/sp
 import ButtonView from '@ckeditor/ckeditor5-ui/src/button/buttonview';
 import Indent from '@ckeditor/ckeditor5-indent/src/indent.js';
 import IndentBlock from '@ckeditor/ckeditor5-indent/src/indentblock.js';
-
-import ListStyle from '@ckeditor/ckeditor5-list/src/liststyle.js';
+// import List from '@ckeditor/ckeditor5-list/src/list';
+// import ListStyle from '@ckeditor/ckeditor5-list/src/liststyle.js';
 
 import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
 
 import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
 
+//常用按鈕
+import {
+    InsertTextIcon1,
+    InsertTextIcon2,
+} from './js/common-use-icon/index.js';
+//增加符號
+import {SpecialCharactersArrowsExtended} from './js/special-characters/index.js';
+//客製list-style
+import customList from './js/custom-list/src/list';
+
+import customListStyle from './js/custom-list/src/ListStyle';
 
 
 
@@ -40,9 +50,6 @@ function ClipboardButtons(editor) {
     addButton('copy', 'Copy');
     addButton('cut', 'Cut');
     addButton('paste', 'Paste');
-    addButton('test', 'test');
-    addButton('test2', 'test2');
-    addButton('test3', 'test3');
 
     function addButton(action, label) {
         editor.ui.componentFactory.add(action, (locale) => {
@@ -69,116 +76,6 @@ function ClipboardButtons(editor) {
         });
     }
 }
-
-function SpecialCharactersArrowsExtended(editor) {
-    editor.plugins.get('SpecialCharacters').addItems('常用', [
-        {
-            title: '大括號',
-            character: '【】',
-        },
-        {
-            title: '--',
-            character: '{}',
-        },
-        {
-            title: 'simple arrow up',
-            character: '↑',
-        },
-        {
-            title: 'simple arrow right',
-            character: '→',
-        },
-        {
-            title: 'simple arrow down',
-            character: '↓',
-        },
-    ]);
-}
-
-class InsertTextIcon1 extends Plugin {
-    init() {
-        console.log('執行')
-        const editor = this.editor;
-
-        editor.ui.componentFactory.add('InsertTextIcon1', (locale) => {
-            const view = new ButtonView(locale);
-
-            view.set({
-                label: '【】',
-                withText: true,
-                tooltip: true,
-                // icon: imageIcon,
-                // tooltip: true,
-            });
-
-            // Callback executed once the image is clicked.
-            view.on('execute', () => {
-                // const imageURL = prompt('Image URL')
-                editor.model.change((writer) => {
-                    const insertPosition =
-                        editor.model.document.selection.getFirstPosition();
-                    writer.insertText('【】', insertPosition);
-                });
-            });
-
-            return view;
-        });
-        editor.ui.componentFactory.add('InsertTextIcon2', (locale) => {
-            const view = new ButtonView(locale);
-
-            view.set({
-                label: '，',
-                withText: true,
-                tooltip: true,
-                // icon: imageIcon,
-                // tooltip: true,
-            });
-
-            // Callback executed once the image is clicked.
-            view.on('execute', () => {
-                // const imageURL = prompt('Image URL')
-                editor.model.change((writer) => {
-                    const insertPosition =
-                        editor.model.document.selection.getFirstPosition();
-                    writer.insertText('，', insertPosition);
-                });
-            });
-
-            return view;
-        });
-    }
-}
-class InsertTextIcon2 extends Plugin {
-    init() {
-        console.log('執行');
-        const editor = this.editor;
-        
-        editor.ui.componentFactory.add('InsertTextIcon2', (locale) => {
-            const view = new ButtonView(locale);
-
-            view.set({
-                label: '，',
-                withText: true,
-                tooltip: true,
-                // icon: imageIcon,
-                // tooltip: true,
-            });
-
-            // Callback executed once the image is clicked.
-            view.on('execute', () => {
-                // const imageURL = prompt('Image URL')
-                editor.model.change((writer) => {
-                    const insertPosition =
-                        editor.model.document.selection.getFirstPosition();
-                    writer.insertText('，', insertPosition);
-                });
-            });
-
-            return view;
-        });
-    }
-}
-
 class ListStartAttribute extends Plugin {
     init() {
         console.log('ListStartAttribute is init');
@@ -190,7 +87,6 @@ class ListStartAttribute extends Plugin {
         // 2.set conversion up/down
         editor.conversion.for('downcast').add((dispatcher) => {
             dispatcher.on('attribute', (evt, data, conversionApi) => {
-                console.log('data', data.item, data.item.name);
                 if (data.item.name != 'listItem') {
                     return;
                 }
@@ -205,11 +101,56 @@ class ListStartAttribute extends Plugin {
                     data.attributeNewValue &&
                     !containerElement.getAttribute('start')
                 ) {
+                console.log(
+                    'data',
+                    viewWriter,
+                    viewElement,
+                    containerElement._children,containerElement,
+                    data,
+                    data.attributeKey
+                );
+
                     viewWriter.setAttribute(
                         data.attributeKey,
                         data.attributeNewValue,
                         containerElement
                     );
+                    var index = Array.prototype.indexOf.call(
+                        containerElement._children,
+                        viewElement
+                    );
+                    console.log('index',index)
+                    viewWriter.setAttribute('test', index, viewElement);
+                }
+            });
+        });
+        editor.conversion.for('upcast').add((dispatcher) => {
+            dispatcher.on('attribute', (evt, data, conversionApi) => {
+                console.log('up')
+                if (data.item.name != 'listItem') {
+                    return;
+                }
+
+                const viewWriter = conversionApi.writer;
+                const viewElement = conversionApi.mapper.toViewElement(
+                    data.item
+                );
+                const containerElement = viewElement.parent;
+
+                if (
+                    data.attributeNewValue &&
+                    !containerElement.getAttribute('start')
+                ) {
+                    console.log(
+                        '--data',
+                        viewWriter,
+                        viewElement,
+                        containerElement._children,
+                        containerElement,
+                        data,
+                        data.attributeKey
+                    );
+                    
                 }
             });
         });
@@ -225,9 +166,9 @@ class ListStartAttribute extends Plugin {
             },
             converterPriority: 'low',
         });
-        editor.execute('listStyle', { type: 'lower-roman' });
     }
 }
+
 
 
 export default class MyEditor {
@@ -259,21 +200,19 @@ export default class MyEditor {
                 BlockQuote,
                 Heading,
                 Link,
-                List,
+                // List,
+                // ListStyle,
                 Underline,
                 SpecialCharacters,
-                // SpecialCharactersArrows,
-                // SpecialCharactersCurrency,
-                // SpecialCharactersEssentials,
-                // SpecialCharactersLatin,
-                // SpecialCharactersMathematical,
                 SpecialCharactersText,
                 SpecialCharactersArrowsExtended,
                 ClipboardButtons,
-                ListStyle,
+
+                customList,
+                customListStyle,
+                ListStartAttribute,
                 InsertTextIcon1,
                 InsertTextIcon2,
-                ListStartAttribute,
             ],
             toolbar: {
                 items: [
