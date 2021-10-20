@@ -248,14 +248,7 @@ function downcastListStyleAttribute() {
 			if ( !areRepresentingSameList( currentElement, previousElement ) ) {
 				viewWriter.breakContainer( viewWriter.createPositionBefore( viewItem ) );
 			}
-			console.warn(
-                '---',
-                data,
-                viewItem,
-                '----',
-                data.attributeNewValue,
-                currentElement.getAttribute('listIndent')
-            );
+			
 			setListStyle( viewWriter, data.attributeNewValue, viewItem.parent );
 		}, { priority: 'low' } );
 	};
@@ -329,7 +322,6 @@ function fixListAfterIndentListCommand( editor ) {
 
 		editor.model.change( writer => {
 			for ( const item of itemsToUpdate ) {
-				console.log('rup4f', item, itemsToUpdate, valueToSet);
 				writer.setAttribute( 'listStyle', valueToSet, item );
 			}
 		} );
@@ -455,12 +447,10 @@ function fixListStyleAttributeOnListItemElements( editor ) {
 		let wasFixed = false;
 		const insertedListItems = getChangedListItems( editor.model.document.differ.getChanges() )
 			.filter( item => {
-		console.log('進', item);
 
 				// Don't touch todo lists. They are handled in another post-fixer.
 				return item.getAttribute( 'listType' ) !== 'todo';
 			} );
-		console.log('進----');
 
 		if ( !insertedListItems.length ) {
 			return wasFixed;
@@ -549,7 +539,6 @@ function fixListStyleAttributeOnListItemElements( editor ) {
 // @param {module:engine/model/element~Element} itemToChange
 // @returns {Boolean}
 function shouldInheritListType( baseItem, itemToChange ) {
-			console.log('uo');
 
 	if ( !baseItem ) {
 		return false;

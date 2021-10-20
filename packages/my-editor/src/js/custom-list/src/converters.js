@@ -578,7 +578,6 @@ export function modelChangePostFixer( model, writer ) {
 	const itemToListHead = new Map();
 
 	let applied = false;
-
 	for ( const entry of changes ) {
 		if ( entry.type == 'insert' && entry.name == 'listItem' ) {
 			_addListToFix( entry.position );
@@ -625,8 +624,9 @@ export function modelChangePostFixer( model, writer ) {
 	for ( const listHead of itemToListHead.values() ) {
 		_fixListIndents( listHead );
 		_fixListTypes( listHead );
+		_customAddNumLi(listHead);
 	}
-
+	
 	return applied;
 
 	function _addListToFix( position ) {
@@ -689,10 +689,39 @@ export function modelChangePostFixer( model, writer ) {
 			} else {
 				fixBy = null;
 				maxIndent = item.getAttribute( 'listIndent' ) + 1;
+
+				// writer.setAttribute('test', "0", item);
+
 			}
 
 			item = item.nextSibling;
+			console.warn('next', item);
+
 		}
+	}
+	function _customAddNumLi(item){
+		
+		let count = 0;
+		let prevIndent;
+		while (item && item.is('element', 'listItem')) {
+            
+			if (prevIndent === item.getAttribute('listIndent')){
+				count += 1;
+			}else{
+				count=0;
+			}
+			writer.setAttribute('index', count, item);
+
+			
+			prevIndent = item.getAttribute('listIndent');
+			console.warn(
+                '****設定',
+                count,
+                prevIndent,
+                item.getAttribute('listIndent')
+            );
+            item = item.nextSibling;
+        }
 	}
 
 	function _fixListTypes( item ) {

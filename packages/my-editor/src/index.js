@@ -82,11 +82,12 @@ class ListStartAttribute extends Plugin {
         const editor = this.editor;
 
         // 1.extend schema
-        editor.model.schema.extend('listItem', { allowAttributes: 'start' });
+        editor.model.schema.extend('listItem', { allowAttributes: 'index' });
 
         // 2.set conversion up/down
         editor.conversion.for('downcast').add((dispatcher) => {
-            dispatcher.on('attribute', (evt, data, conversionApi) => {
+            dispatcher.on('attribute:index', (evt, data, conversionApi) => {
+                console.log('aaaaaaaaa', data.attributeNewValue);
                 if (data.item.name != 'listItem') {
                     return;
                 }
@@ -97,63 +98,30 @@ class ListStartAttribute extends Plugin {
                 );
                 const containerElement = viewElement.parent;
 
-                if (
-                    data.attributeNewValue &&
-                    !containerElement.getAttribute('start')
+                if (true
                 ) {
                 console.log(
                     'data',
-                    viewWriter,
                     viewElement,
-                    containerElement._children,containerElement,
                     data,
-                    data.attributeKey
+                    data.attributeKey,
+                    data.attributeNewValue
                 );
 
                     viewWriter.setAttribute(
                         data.attributeKey,
                         data.attributeNewValue,
-                        containerElement
+                        viewElement
                     );
                     var index = Array.prototype.indexOf.call(
                         containerElement._children,
                         viewElement
                     );
-                    console.log('index',index)
-                    viewWriter.setAttribute('test', index, viewElement);
+                    // viewWriter.setAttribute('index', index, viewElement);
                 }
             });
         });
-        editor.conversion.for('upcast').add((dispatcher) => {
-            dispatcher.on('attribute', (evt, data, conversionApi) => {
-                console.log('up')
-                if (data.item.name != 'listItem') {
-                    return;
-                }
 
-                const viewWriter = conversionApi.writer;
-                const viewElement = conversionApi.mapper.toViewElement(
-                    data.item
-                );
-                const containerElement = viewElement.parent;
-
-                if (
-                    data.attributeNewValue &&
-                    !containerElement.getAttribute('start')
-                ) {
-                    console.log(
-                        '--data',
-                        viewWriter,
-                        viewElement,
-                        containerElement._children,
-                        containerElement,
-                        data,
-                        data.attributeKey
-                    );
-                    
-                }
-            });
-        });
 
         editor.conversion.for('upcast').attributeToAttribute({
             model: {
@@ -173,7 +141,6 @@ class ListStartAttribute extends Plugin {
 
 export default class MyEditor {
     constructor(props) {
-        console.log(props,this)
         Object.assign(
             this, {
                 id: 'editor-area',
@@ -265,7 +232,6 @@ export default class MyEditor {
             },
         })
             .then((editor) => {
-                console.log('Editor was initialized', editor);
                 CKEditorInspector.attach(editor);
             })
             .catch((error) => {

@@ -2,7 +2,6 @@ import ButtonView from '@ckeditor/ckeditor5-ui/src/button/buttonview';
 import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
 export class InsertTextIcon1 extends Plugin {
     init() {
-        console.log('執行');
         const editor = this.editor;
 
         editor.ui.componentFactory.add('InsertTextIcon1', (locale) => {
@@ -55,7 +54,6 @@ export class InsertTextIcon1 extends Plugin {
 }
 export class InsertTextIcon2 extends Plugin {
     init() {
-        console.log('執行');
         const editor = this.editor;
 
         editor.ui.componentFactory.add('InsertTextIcon2', (locale) => {
