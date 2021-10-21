@@ -1,0 +1,4 @@
+ol > li:before{
+    content: attr(index);
+    background-color: rgb(211 211 211);
+}

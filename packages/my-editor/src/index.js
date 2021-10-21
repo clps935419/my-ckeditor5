@@ -1,5 +1,6 @@
 // packages/my-editor/src/index.js
 import './css/styles.css';
+import './css/custom.css';
 import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment.js';
 import ClassicEditor from '@ckeditor/ckeditor5-editor-classic/src/classiceditor';
 import Essentials from '@ckeditor/ckeditor5-essentials/src/essentials';
@@ -107,14 +108,9 @@ class ListStartAttribute extends Plugin {
                     data.attributeKey,
                     data.attributeNewValue
                 );
-
                     viewWriter.setAttribute(
                         data.attributeKey,
                         data.attributeNewValue,
-                        viewElement
-                    );
-                    var index = Array.prototype.indexOf.call(
-                        containerElement._children,
                         viewElement
                     );
                     // viewWriter.setAttribute('index', index, viewElement);
