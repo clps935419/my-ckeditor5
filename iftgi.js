@@ -129,9 +129,12 @@ var setol = function(e,symbol,label){
 		if ( 10 >= count ){
 			//改變data-content屬性
 			if(label==num && 10 == count){
+				console.log('---', symbol[0], symbol[1]);
 				$(this).attr('data-content',''+symbol[0]+'\uff11'+'\uff10'+symbol[1]+'');
 			}
 			else{
+				console.log('---', symbol[0], label[a],symbol[1]);
+
 				$(this).attr('data-content',''+symbol[0]+label[a]+symbol[1]+'');
 			}
 			a++;

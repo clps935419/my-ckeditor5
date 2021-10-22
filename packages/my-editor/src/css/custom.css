@@ -1,4 +1,20 @@
+/* 中文項次 */
+ol{
+    list-style-type: none;
+}
 ol > li:before{
     content: attr(index);
     background-color: rgb(211 211 211);
+}
+/* 縮排 */
+.custom-block-indent-a {
+    margin-left: 10%;
+}
+
+.custom-block-indent-b {
+    margin-left: 20%;
+}
+
+.custom-block-indent-c {
+    margin-left: 30%;
 }

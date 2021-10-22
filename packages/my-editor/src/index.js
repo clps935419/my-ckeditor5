@@ -1,6 +1,3 @@
-// packages/my-editor/src/index.js
-import './css/styles.css';
-import './css/custom.css';
 import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment.js';
 import ClassicEditor from '@ckeditor/ckeditor5-editor-classic/src/classiceditor';
 import Essentials from '@ckeditor/ckeditor5-essentials/src/essentials';
@@ -32,6 +29,10 @@ import IndentBlock from '@ckeditor/ckeditor5-indent/src/indentblock.js';
 import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
 
 import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
+
+//客製樣式
+import './css/custom.css';
+
 
 //常用按鈕
 import {
@@ -113,6 +114,11 @@ class ListStartAttribute extends Plugin {
                         data.attributeNewValue,
                         viewElement
                     );
+                    // viewWriter.setAttribute(
+                    //     'list-style-type',
+                    //     'none',
+                    //     containerElement
+                    // );
                     // viewWriter.setAttribute('index', index, viewElement);
                 }
             });
@@ -172,12 +178,15 @@ export default class MyEditor {
                 ClipboardButtons,
 
                 customList,
-                customListStyle,
+                // customListStyle,
                 ListStartAttribute,
                 InsertTextIcon1,
                 InsertTextIcon2,
             ],
             toolbar: {
+                // viewportTopOffset: 10,
+                shouldNotGroupWhenFull: true,
+                // isSticky: false,
                 items: [
                     'heading',
                     '|',
@@ -213,8 +222,6 @@ export default class MyEditor {
                     'outdent',
                     'indent',
                 ],
-                viewportTopOffset: 10,
-                shouldNotGroupWhenFull: true,
             },
             indentBlock: {
                 classes: [
@@ -229,6 +236,13 @@ export default class MyEditor {
         })
             .then((editor) => {
                 CKEditorInspector.attach(editor);
+                document
+                    .querySelector('#submit')
+                    .addEventListener('click', () => {
+                        const editorData = editor.getData();
+                        console.log('editor', editorData);
+                        // ...
+                    });
             })
             .catch((error) => {
                 console.error(error.stack);
