@@ -6,6 +6,7 @@ external/
 lerna-debug.log
 .idea
 .vscode
+dist/
 
 # Ignore `yarn.lock` - this file might contain info from external repositories.
 yarn.lock

@@ -143,16 +143,14 @@ class ListStartAttribute extends Plugin {
 
 export default class MyEditor {
     constructor(props) {
-        Object.assign(
-            this, {
-                id: 'editor-area',
-            },
-            props
-        );
+        this.id = props.id;
         this.render();
+        console.log('this', this, props);
+        this.editorObj;
     }
 
     render() {
+        const _this=this;
         ClassicEditor.create(document.querySelector(`#${this.id}`), {
             plugins: [
                 Alignment,
@@ -236,13 +234,8 @@ export default class MyEditor {
         })
             .then((editor) => {
                 CKEditorInspector.attach(editor);
-                document
-                    .querySelector('#submit')
-                    .addEventListener('click', () => {
-                        const editorData = editor.getData();
-                        console.log('editor', editorData);
-                        // ...
-                    });
+                _this.editorObj = editor;
+                
             })
             .catch((error) => {
                 console.error(error.stack);

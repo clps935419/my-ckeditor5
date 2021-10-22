@@ -576,7 +576,6 @@ export function viewToModelPosition( model ) {
 export function modelChangePostFixer( model, writer ) {
 	const changes = model.document.differ.getChanges();
 	const itemToListHead = new Map();
-	console.warn('ch',changes);
 	let applied = false;
 	for ( const entry of changes ) {
 		if ( entry.type == 'insert' && entry.name == 'listItem' ) {
@@ -704,13 +703,11 @@ export function modelChangePostFixer( model, writer ) {
 		}
 	}
 	function _customAddNumLi(item){
-		console.log('*******', item.getAttribute('listType'));
 		// writer.setAttribute(
         //     'listType',
         //     'none',
         //     item
         // );
-
 		const cn = [
             '\u4E00',
             '\u4E8C',
