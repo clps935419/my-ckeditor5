@@ -1,5 +1,5 @@
+import ClassicEditorBase from '@ckeditor/ckeditor5-editor-classic/src/classiceditor';
 import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment.js';
-import ClassicEditor from '@ckeditor/ckeditor5-editor-classic/src/classiceditor';
 import Essentials from '@ckeditor/ckeditor5-essentials/src/essentials';
 import Paragraph from '@ckeditor/ckeditor5-paragraph/src/paragraph';
 import Bold from '@ckeditor/ckeditor5-basic-styles/src/bold';
@@ -33,20 +33,19 @@ import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
 //客製樣式
 import './css/custom.css';
 
-
 //常用按鈕
 import {
     InsertTextIcon1,
     InsertTextIcon2,
 } from './js/common-use-icon/index.js';
 //增加符號
-import {SpecialCharactersArrowsExtended} from './js/special-characters/index.js';
+import {
+    SpecialCharactersArrowsExtended
+} from './js/special-characters/index.js';
 //客製list-style
 import customList from './js/custom-list/src/list';
 
 import customListStyle from './js/custom-list/src/ListStyle';
-
-
 
 function ClipboardButtons(editor) {
     addButton('copy', 'Copy');
@@ -65,7 +64,7 @@ function ClipboardButtons(editor) {
             });
 
             view.on('execute', () => {
-                console.log('this', this, locale,action);
+                console.log('this', this, locale, action);
                 if (action === 'paste') {
                     alert('Sorry man, no can do!');
                     document.execCommand(action);
@@ -84,7 +83,9 @@ class ListStartAttribute extends Plugin {
         const editor = this.editor;
 
         // 1.extend schema
-        editor.model.schema.extend('listItem', { allowAttributes: 'index' });
+        editor.model.schema.extend('listItem', {
+            allowAttributes: 'index'
+        });
 
         // 2.set conversion up/down
         editor.conversion.for('downcast').add((dispatcher) => {
@@ -100,15 +101,14 @@ class ListStartAttribute extends Plugin {
                 );
                 const containerElement = viewElement.parent;
 
-                if (true
-                ) {
-                console.log(
-                    'data',
-                    viewElement,
-                    data,
-                    data.attributeKey,
-                    data.attributeNewValue
-                );
+                if (true) {
+                    console.log(
+                        'data',
+                        viewElement,
+                        data,
+                        data.attributeKey,
+                        data.attributeNewValue
+                    );
                     viewWriter.setAttribute(
                         data.attributeKey,
                         data.attributeNewValue,
@@ -124,7 +124,6 @@ class ListStartAttribute extends Plugin {
             });
         });
 
-
         editor.conversion.for('upcast').attributeToAttribute({
             model: {
                 name: 'listItem',
@@ -138,107 +137,91 @@ class ListStartAttribute extends Plugin {
         });
     }
 }
+export default class ClassicEditor extends ClassicEditorBase {};
 
+ClassicEditor.builtinPlugins = [
+    Alignment,
+    Essentials,
+    Paragraph,
+    Bold,
+    FontBackgroundColor,
+    FontColor,
+    FontFamily,
+    FontSize,
+    Indent,
+    IndentBlock,
+    Italic,
+    BlockQuote,
+    Heading,
+    Link,
+    // List,
+    // ListStyle,
+    Underline,
+    SpecialCharacters,
+    SpecialCharactersText,
+    SpecialCharactersArrowsExtended,
+    ClipboardButtons,
 
+    customList,
+    // customListStyle,
+    ListStartAttribute,
+    InsertTextIcon1,
+    InsertTextIcon2,
+];
+// Editor configuration.
+ClassicEditor.defaultConfig = {
+    fontFamily: {
+        options: ['default', '標楷體'],
+    },
+    toolbar: {
+        // viewportTopOffset: 10,
+        shouldNotGroupWhenFull: true,
+        // isSticky: false,
+        items: [
+            'heading',
+            '|',
+            'bold',
+            'italic',
+            'underline',
+            'link',
+            'bulletedList',
+            'numberedList',
+            'alignment',
+            '|',
+            'fontColor',
+            'fontFamily',
+            'fontSize',
+            'fontBackgroundColor',
+            '|',
+            'blockQuote',
+            'undo',
+            'redo',
+            '|',
+            'specialCharacters',
+            '|',
+            'copy',
+            'cut',
+            'paste',
+            'test',
+            'test2',
+            'test3',
+            '|',
+            'InsertTextIcon1',
+            'InsertTextIcon2',
+            '|',
+            'outdent',
+            'indent',
+        ],
+    },
+    indentBlock: {
+        classes: [
+            'custom-block-indent-a', // First step - smallest indentation.
+            'custom-block-indent-b',
+            'custom-block-indent-c', // Last step - biggest indentation.
+        ],
+    },
+    fontSize: {
+        options: [12, 14, '預設', 16, 18, 20, 22, 24, 26, 28, 30],
+    },
+};
 
-export default class MyEditor {
-    constructor(props) {
-        this.id = props.id;
-        this.render();
-        console.log('this', this, props);
-        this.editorObj;
-    }
-
-    render() {
-        const _this=this;
-        ClassicEditor.create(document.querySelector(`#${this.id}`), {
-            plugins: [
-                Alignment,
-                Essentials,
-                Paragraph,
-                Bold,
-                FontBackgroundColor,
-                FontColor,
-                FontFamily,
-                FontSize,
-                Indent,
-                IndentBlock,
-                Italic,
-                BlockQuote,
-                Heading,
-                Link,
-                // List,
-                // ListStyle,
-                Underline,
-                SpecialCharacters,
-                SpecialCharactersText,
-                SpecialCharactersArrowsExtended,
-                ClipboardButtons,
-
-                customList,
-                // customListStyle,
-                ListStartAttribute,
-                InsertTextIcon1,
-                InsertTextIcon2,
-            ],
-            toolbar: {
-                // viewportTopOffset: 10,
-                shouldNotGroupWhenFull: true,
-                // isSticky: false,
-                items: [
-                    'heading',
-                    '|',
-                    'bold',
-                    'italic',
-                    'underline',
-                    'link',
-                    'bulletedList',
-                    'numberedList',
-                    'alignment',
-                    '|',
-                    'fontColor',
-                    'fontFamily',
-                    'fontSize',
-                    'fontBackgroundColor',
-                    '|',
-                    'blockQuote',
-                    'undo',
-                    'redo',
-                    '|',
-                    'specialCharacters',
-                    '|',
-                    'copy',
-                    'cut',
-                    'paste',
-                    'test',
-                    'test2',
-                    'test3',
-                    '|',
-                    'InsertTextIcon1',
-                    'InsertTextIcon2',
-                    '|',
-                    'outdent',
-                    'indent',
-                ],
-            },
-            indentBlock: {
-                classes: [
-                    'custom-block-indent-a', // First step - smallest indentation.
-                    'custom-block-indent-b',
-                    'custom-block-indent-c', // Last step - biggest indentation.
-                ],
-            },
-            fontSize: {
-                options: [12, 14, '預設', 16, 18, 20, 22, 24, 26, 28, 30],
-            },
-        })
-            .then((editor) => {
-                CKEditorInspector.attach(editor);
-                _this.editorObj = editor;
-                
-            })
-            .catch((error) => {
-                console.error(error.stack);
-            });
-    }
-}

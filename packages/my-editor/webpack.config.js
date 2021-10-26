@@ -9,9 +9,11 @@ module.exports = {
     mode: 'production',
     entry: './src/index.js',
     output: {
+        library: 'ClassicEditor',
         path: path.resolve(__dirname, 'dist'),
         filename: 'my-editor.min.js',
         libraryTarget: 'umd',
+        libraryExport: 'default',
     },
     optimization: {
         minimizer: [

@@ -1,22 +1,33 @@
-import Editor from "../packages/my-editor/src/index.js";
-// import Editor from '../packages/my-editor/dist/my-editor.min.js';
-function render(id){
-    return new Editor({
-        id:id
+import ClassicEditor from '../packages/my-editor/src/index.js';
+import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
+ClassicEditor.create(document.querySelector('#editor-area'))
+    .then((editor) => {
+        CKEditorInspector.attach(editor);
+        document.querySelector('#submit').addEventListener('click', () => {
+            console.log('get', editor.getData());
+        });
+        console.log('進去=--', editor);
     })
-}
-const editor = render('editor-area');
-const editor2 = render('editor-area2');
+    .catch((error) => {
+        console.error('There was a problem initializing the editor.', error);
+    });
+ClassicEditor.create(document.querySelector('#editor-area2'))
+    .then((editor) => {
+        CKEditorInspector.attach(editor);
+        document.querySelector('#submit2').addEventListener(
+            'click',
+            () => {
+                console.log('get', editor.getData());
+            },
+            false
+        );
+    })
+    .catch((error) => {
+        console.error('There was a problem initializing the editor.', error);
+    });    
 
-document.querySelector('#submit').addEventListener('click', () => {
-    console.log('get', editor.editorObj.getData());
-});
 
-document.querySelector('#submit2').addEventListener(
-    'click',
-    () => {
-        console.log('get', editor2.editorObj.getData());
-    },
-    false
-);
+
+
+
 
