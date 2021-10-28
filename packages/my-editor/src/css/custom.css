@@ -6,7 +6,7 @@ ol{
     list-style-type: none;
 }
 ol > li:before{
-    content: attr(index);
+    content: attr(data-content);
     background-color: rgb(211 211 211);
 }
 /* 縮排 */

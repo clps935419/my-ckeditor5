@@ -84,56 +84,47 @@ class ListStartAttribute extends Plugin {
 
         // 1.extend schema
         editor.model.schema.extend('listItem', {
-            allowAttributes: 'index'
+            allowAttributes: 'data-content'
         });
 
         // 2.set conversion up/down
         editor.conversion.for('downcast').add((dispatcher) => {
-            dispatcher.on('attribute:index', (evt, data, conversionApi) => {
-                console.log('aaaaaaaaa', data.attributeNewValue);
-                if (data.item.name != 'listItem') {
-                    return;
-                }
+            dispatcher.on(
+                'attribute:data-content',
+                (evt, data, conversionApi) => {
+                    console.log('aaaaaaaaa', data.attributeNewValue);
+                    if (data.item.name != 'listItem') {
+                        return;
+                    }
 
-                const viewWriter = conversionApi.writer;
-                const viewElement = conversionApi.mapper.toViewElement(
-                    data.item
-                );
-                const containerElement = viewElement.parent;
-
-                if (true) {
-                    console.log(
-                        'data',
-                        viewElement,
-                        data,
-                        data.attributeKey,
-                        data.attributeNewValue
+                    const viewWriter = conversionApi.writer;
+                    const viewElement = conversionApi.mapper.toViewElement(
+                        data.item
                     );
-                    viewWriter.setAttribute(
-                        data.attributeKey,
-                        data.attributeNewValue,
-                        viewElement
-                    );
-                    // viewWriter.setAttribute(
-                    //     'list-style-type',
-                    //     'none',
-                    //     containerElement
-                    // );
-                    // viewWriter.setAttribute('index', index, viewElement);
-                }
-            });
-        });
+                    const containerElement = viewElement.parent;
 
-        editor.conversion.for('upcast').attributeToAttribute({
-            model: {
-                name: 'listItem',
-                key: 'start',
-            },
-            view: {
-                name: 'ol',
-                key: 'start',
-            },
-            converterPriority: 'low',
+                    if (true) {
+                        console.log(
+                            'data',
+                            viewElement,
+                            data,
+                            data.attributeKey,
+                            data.attributeNewValue
+                        );
+                        viewWriter.setAttribute(
+                            data.attributeKey,
+                            data.attributeNewValue,
+                            viewElement
+                        );
+                        // viewWriter.setAttribute(
+                        //     'list-style-type',
+                        //     'none',
+                        //     containerElement
+                        // );
+                        // viewWriter.setAttribute('index', index, viewElement);
+                    }
+                }
+            );
         });
     }
 }
@@ -152,7 +143,7 @@ ClassicEditor.builtinPlugins = [
     IndentBlock,
     Italic,
     BlockQuote,
-    Heading,
+    // Heading,
     Link,
     // List,
     // ListStyle,
@@ -178,7 +169,7 @@ ClassicEditor.defaultConfig = {
         shouldNotGroupWhenFull: true,
         // isSticky: false,
         items: [
-            'heading',
+            // 'heading',
             '|',
             'bold',
             'italic',
