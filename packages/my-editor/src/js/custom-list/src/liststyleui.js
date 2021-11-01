@@ -22,7 +22,8 @@ import listStyleLowerRomanIcon from '../theme/icons/liststylelowerroman.svg';
 import listStyleUpperRomanIcon from '../theme/icons/liststyleupperroman.svg';
 import listStyleLowerLatinIcon from '../theme/icons/liststylelowerlatin.svg';
 import listStyleUpperLatinIcon from '../theme/icons/liststyleupperlatin.svg';
-
+import personal from '../theme/icons/personal.svg';
+import personalBlue from '../theme/icons/personal-blue.svg';
 import '../theme/liststyles.css';
 
 /**
@@ -74,51 +75,68 @@ export default class ListStyleUI extends Plugin {
 			]
 		} ) );
 
-		editor.ui.componentFactory.add( 'numberedList', getSplitButtonCreator( {
-			editor,
-			parentCommandName: 'numberedList',
-			buttonLabel: t( 'Numbered List' ),
-			buttonIcon: numberedListIcon,
-			toolbarAriaLabel: t( 'Numbered list styles toolbar' ),
-			styleDefinitions: [
-				{
-					label: t( 'Toggle the decimal list style' ),
-					tooltip: t( 'Decimal' ),
-					type: 'decimal',
-					icon: listStyleDecimalIcon
-				},
-				{
-					label: t( 'Toggle the decimal with leading zero list style' ),
-					tooltip: t( 'Decimal with leading zero' ),
-					type: 'decimal-leading-zero',
-					icon: listStyleDecimalWithLeadingZeroIcon
-				},
-				{
-					label: t( 'Toggle the lower–roman list style' ),
-					tooltip: t( 'Lower–roman' ),
-					type: 'lower-roman',
-					icon: listStyleLowerRomanIcon
-				},
-				{
-					label: t( 'Toggle the upper–roman list style' ),
-					tooltip: t( 'Upper-roman' ),
-					type: 'upper-roman',
-					icon: listStyleUpperRomanIcon
-				},
-				{
-					label: t( 'Toggle the lower–latin list style' ),
-					tooltip: t( 'Lower-latin' ),
-					type: 'lower-latin',
-					icon: listStyleLowerLatinIcon
-				},
-				{
-					label: t( 'Toggle the upper–latin list style' ),
-					tooltip: t( 'Upper-latin' ),
-					type: 'upper-latin',
-					icon: listStyleUpperLatinIcon
-				}
-			]
-		} ) );
+		editor.ui.componentFactory.add(
+            'numberedList',
+            getSplitButtonCreator({
+                editor,
+                parentCommandName: 'numberedList',
+                buttonLabel: t('Numbered List'),
+                buttonIcon: numberedListIcon,
+                toolbarAriaLabel: t('Numbered list styles toolbar'),
+                styleDefinitions: [
+                    // {
+                    //     label: t('Toggle the decimal list style'),
+                    //     tooltip: t('Decimal'),
+                    //     type: 'decimal',
+                    //     icon: listStyleDecimalIcon,
+                    // },
+                    // {
+                    //     label: t(
+                    //         'Toggle the decimal with leading zero list style'
+                    //     ),
+                    //     tooltip: t('Decimal with leading zero'),
+                    //     type: 'decimal-leading-zero',
+                    //     icon: listStyleDecimalWithLeadingZeroIcon,
+                    // },
+                    // {
+                    //     label: t('Toggle the lower–roman list style'),
+                    //     tooltip: t('Lower–roman'),
+                    //     type: 'lower-roman',
+                    //     icon: listStyleLowerRomanIcon,
+                    // },
+                    // {
+                    //     label: t('Toggle the upper–roman list style'),
+                    //     tooltip: t('Upper-roman'),
+                    //     type: 'upper-roman',
+                    //     icon: listStyleUpperRomanIcon,
+                    // },
+                    // {
+                    //     label: t('Toggle the lower–latin list style'),
+                    //     tooltip: t('Lower-latin'),
+                    //     type: 'lower-latin',
+                    //     icon: listStyleLowerLatinIcon,
+                    // },
+                    // {
+                    //     label: t('Toggle the upper–latin list style'),
+                    //     tooltip: t('Upper-latin'),
+                    //     type: 'upper-latin',
+                    //     icon: listStyleUpperLatinIcon,
+                    // },
+                    {
+                        label: t('test1'),
+                        tooltip: t('test1'),
+                        type: 'test1',
+                        icon: personal,
+                    },
+                    {
+                        label: t('test2'),
+                        tooltip: t('test2'),
+                        type: 'test2',
+                        icon: personalBlue,
+                    },
+                ],
+            })
+        );
 	}
 }
 

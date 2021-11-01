@@ -8,6 +8,7 @@
  */
 
 import { TreeWalker } from 'ckeditor5/src/engine';
+import { listArr } from '../../custom_data/index';
 
 import {
     generateLiInUl,
@@ -632,10 +633,10 @@ export function viewToModelPosition(model) {
 export function modelChangePostFixer(model, writer) {
     const changes = model.document.differ.getChanges();
     const itemToListHead = new Map();
-
     let applied = false;
 
     for (const entry of changes) {
+        console.log('entry',entry)
         if (entry.type == 'insert' && entry.name == 'listItem') {
             _addListToFix(entry.position);
         } else if (entry.type == 'insert' && entry.name != 'listItem') {
@@ -657,7 +658,6 @@ export function modelChangePostFixer(model, writer) {
 
                 if (item.hasAttribute('listStyle')) {
                     writer.removeAttribute('listStyle', item);
-
                     applied = true;
                 }
 
@@ -683,9 +683,14 @@ export function modelChangePostFixer(model, writer) {
             entry.attributeKey == 'listType'
         ) {
             _addListToFix(entry.range.start);
+        }else if (
+            //liststyle 變動也要加入進來，才會觸發改變符號階層
+            entry.type == 'attribute' &&
+            entry.attributeKey == 'listStyle'
+        ) {
+            _addListToFix(entry.range.start);
         }
     }
-
     for (const listHead of itemToListHead.values()) {
         _fixListIndents(listHead);
         _fixListTypes(listHead);
@@ -765,27 +770,16 @@ export function modelChangePostFixer(model, writer) {
         //     'none',
         //     item
         // );
-        const cn = [
-            '\u4E00',
-            '\u4E8C',
-            '\u4E09',
-            '\u56DB',
-            '\u4E94',
-            '\u516D',
-            '\u4E03',
-            '\u516B',
-            '\u4E5D',
-            '\u5341',
-            '',
-        ];
         let count = 0;
         let dataContainerArr = [];
         let prevIndent = -1;
+        let chinesArr;
         while (item && item.is('element', 'listItem')) {
             console.warn(
                 '--*----------------',
                 item,
-                item.getAttribute('listType')
+                item.getAttribute('listType'),
+                item.getAttribute('listStyle')
             );
             if (item.getAttribute('listType') !== 'numbered') {
                 item = item.nextSibling;
@@ -795,6 +789,7 @@ export function modelChangePostFixer(model, writer) {
             const tmpObj = {
                 indent: currIndent,
                 index: '',
+                listStyle: '',
             };
             if (prevIndent === currIndent) {
                 //同一階層就持續+1
@@ -816,88 +811,25 @@ export function modelChangePostFixer(model, writer) {
                 count = filterArr[filterArr.length - 1].index + 1;
             }
             tmpObj.index = count;
-
+            if(tmpObj.indent === 0){
+                chinesArr = listArr[item.getAttribute('listStyle') || 'default'];
+            }
             //轉中文
 
             writer.setAttribute(
                 'data-content',
-                changChines(tmpObj.indent, tmpObj.index),
+                changChines(tmpObj.indent, tmpObj.index, chinesArr),
                 item
             );
             prevIndent = currIndent;
             item = item.nextSibling;
             dataContainerArr.push(tmpObj);
-            function changChines(indent, count) {
-                const chinesArr = [];
+            function changChines(indent, count,arr) {
+                const chinesArr = arr;
+				console.log('--', indent, count, arr);
+
                 let num = count + 1; //陣列從0開始因此+1
-                chinesArr[0] = [
-                    '\u4E00',
-                    '\u4E8C',
-                    '\u4E09',
-                    '\u56DB',
-                    '\u4E94',
-                    '\u516D',
-                    '\u4E03',
-                    '\u516B',
-                    '\u4E5D',
-                    '\u5341',
-                    '',
-                ];
-                chinesArr[1] = [
-                    '\u7532',
-                    '\u4E59',
-                    '\u4E19',
-                    '\u4E01',
-                    '\u620A',
-                    '\u5DF1',
-                    '\u5E9A',
-                    '\u8F9B',
-                    '\u58EC',
-                    '\u7678',
-                    '',
-                ];
-                chinesArr[2] = [
-                    '\u5b50',
-                    '\u4e11',
-                    '\u5bc5',
-                    '\u536f',
-                    '\u8fb0',
-                    '\u5df3',
-                    '\u5348',
-                    '\u672a',
-                    '\u7533',
-                    '\u9149',
-                    '\u620c',
-                    '\u4ea5',
-                ];
-                chinesArr[3] = [
-                    '\uff11',
-                    '\uff12',
-                    '\uff13',
-                    '\uff14',
-                    '\uff15',
-                    '\uff16',
-                    '\uff17',
-                    '\uff18',
-                    '\uff19',
-                    '\uff11',
-                    '',
-                ];
-                chinesArr[4] = [
-                    '\uff11',
-                    '\uff12',
-                    '\uff13',
-                    '\uff14',
-                    '\uff15',
-                    '\uff16',
-                    '\uff17',
-                    '\uff18',
-                    '\uff19',
-                    '',
-                    '',
-                ];
                 let targetArr = chinesArr[indent];
-				console.log('--',targetArr,indent);
 				if(targetArr === undefined){
 					targetArr = chinesArr[0];
 				}

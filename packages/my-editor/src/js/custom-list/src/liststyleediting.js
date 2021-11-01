@@ -221,6 +221,7 @@ function upcastListItemStyle() {
 
 			const listStyle = listParent.getStyle( 'list-style-type' ) || DEFAULT_LIST_TYPE;
 			const listItem = data.modelRange.start.nodeAfter || data.modelRange.end.nodeBefore;
+			console.warn('listStyle',listParent.getStyle( 'list-style-type' ), listStyle, listItem);
 			conversionApi.writer.setAttribute( 'listStyle', listStyle, listItem );
 		}, { priority: 'low' } );
 	};
@@ -248,8 +249,9 @@ function downcastListStyleAttribute() {
 			if ( !areRepresentingSameList( currentElement, previousElement ) ) {
 				viewWriter.breakContainer( viewWriter.createPositionBefore( viewItem ) );
 			}
-			
-			setListStyle( viewWriter, data.attributeNewValue, viewItem.parent );
+			//把OL樣式設定取消掉
+			console.warn('設定')
+			// setListStyle( viewWriter, data.attributeNewValue, viewItem.parent );
 		}, { priority: 'low' } );
 	};
 

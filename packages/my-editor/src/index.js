@@ -154,7 +154,7 @@ ClassicEditor.builtinPlugins = [
     ClipboardButtons,
 
     customList,
-    // customListStyle,
+    customListStyle,
     ListStartAttribute,
     InsertTextIcon1,
     InsertTextIcon2,
