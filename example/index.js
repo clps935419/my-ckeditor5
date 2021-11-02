@@ -2,6 +2,7 @@ import ClassicEditor from '../packages/my-editor/src/index.js';
 import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
 ClassicEditor.create(document.querySelector('#editor-area'))
     .then((editor) => {
+        
         CKEditorInspector.attach(editor);
         document.querySelector('#submit').addEventListener('click', () => {
             console.log('get', editor.getData());

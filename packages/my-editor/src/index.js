@@ -38,6 +38,9 @@ import {
     InsertTextIcon1,
     InsertTextIcon2,
 } from './js/common-use-icon/index.js';
+
+import LinkToolbarUI from './js/custom-dialog/toolbar';
+
 //增加符號
 import {
     SpecialCharactersArrowsExtended
@@ -92,7 +95,6 @@ class ListStartAttribute extends Plugin {
             dispatcher.on(
                 'attribute:data-content',
                 (evt, data, conversionApi) => {
-                    console.log('aaaaaaaaa', data.attributeNewValue);
                     if (data.item.name != 'listItem') {
                         return;
                     }
@@ -104,13 +106,13 @@ class ListStartAttribute extends Plugin {
                     const containerElement = viewElement.parent;
 
                     if (true) {
-                        console.log(
-                            'data',
-                            viewElement,
-                            data,
-                            data.attributeKey,
-                            data.attributeNewValue
-                        );
+                        // console.log(
+                        //     'data',
+                        //     viewElement,
+                        //     data,
+                        //     data.attributeKey,
+                        //     data.attributeNewValue
+                        // );
                         viewWriter.setAttribute(
                             data.attributeKey,
                             data.attributeNewValue,
@@ -158,6 +160,7 @@ ClassicEditor.builtinPlugins = [
     ListStartAttribute,
     InsertTextIcon1,
     InsertTextIcon2,
+    LinkToolbarUI,
 ];
 // Editor configuration.
 ClassicEditor.defaultConfig = {
@@ -193,12 +196,10 @@ ClassicEditor.defaultConfig = {
             'copy',
             'cut',
             'paste',
-            'test',
-            'test2',
-            'test3',
             '|',
             'InsertTextIcon1',
             'InsertTextIcon2',
+            'ck-dialog',
             '|',
             'outdent',
             'indent',

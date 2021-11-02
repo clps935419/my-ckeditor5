@@ -221,7 +221,7 @@ function upcastListItemStyle() {
 
 			const listStyle = listParent.getStyle( 'list-style-type' ) || DEFAULT_LIST_TYPE;
 			const listItem = data.modelRange.start.nodeAfter || data.modelRange.end.nodeBefore;
-			console.warn('listStyle',listParent.getStyle( 'list-style-type' ), listStyle, listItem);
+			// console.warn('listStyle',listParent.getStyle( 'list-style-type' ), listStyle, listItem);
 			conversionApi.writer.setAttribute( 'listStyle', listStyle, listItem );
 		}, { priority: 'low' } );
 	};
@@ -242,15 +242,21 @@ function downcastListStyleAttribute() {
 				listIndent: currentElement.getAttribute( 'listIndent' ),
 				direction: 'backward'
 			} );
-
 			const viewItem = conversionApi.mapper.toViewElement( currentElement );
+			console.log(
+                '---*---',
+                currentElement,
+                previousElement,
+                viewItem,
+                viewItem.parent
+            );
 			
 			// A case when elements represent different lists. We need to separate their container.
 			if ( !areRepresentingSameList( currentElement, previousElement ) ) {
 				viewWriter.breakContainer( viewWriter.createPositionBefore( viewItem ) );
 			}
 			//把OL樣式設定取消掉
-			console.warn('設定')
+			// console.warn('設定')
 			// setListStyle( viewWriter, data.attributeNewValue, viewItem.parent );
 		}, { priority: 'low' } );
 	};
@@ -297,7 +303,6 @@ function downcastListStyleAttribute() {
 function fixListAfterIndentListCommand( editor ) {
 	return ( evt, changedItems ) => {
 		let valueToSet;
-
 		const root = changedItems[ 0 ];
 		const rootIndent = root.getAttribute( 'listIndent' );
 
@@ -321,6 +326,8 @@ function fixListAfterIndentListCommand( editor ) {
 
 			valueToSet = previousSibling.getAttribute( 'listStyle' );
 		}
+		console.log('進去-------', valueToSet);
+
 
 		editor.model.change( writer => {
 			for ( const item of itemsToUpdate ) {
@@ -587,7 +594,12 @@ function shouldInheritListTypeFromPreviousItem( previousItem, itemToChange ) {
 	}
 
 	const previousItemListStyle = previousItem.getAttribute( 'listStyle' );
-
+	console.log(
+        '****',
+		previousItem,
+        previousItemListStyle,
+        itemToChange.getAttribute('listStyle')
+    );
 	if ( !previousItemListStyle || previousItemListStyle === itemToChange.getAttribute( 'listStyle' ) ) {
 		return false;
 	}

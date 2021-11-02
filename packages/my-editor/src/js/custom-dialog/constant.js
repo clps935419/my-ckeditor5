@@ -1,0 +1,4 @@
+const COMMAND_NAME__LINK = 'dialog';
+const TOOLBAR_NAME__LINK = 'ck-dialog';
+const TOOLBAR_LABEL__LINK = '彈窗';
+export { COMMAND_NAME__LINK, TOOLBAR_NAME__LINK, TOOLBAR_LABEL__LINK };

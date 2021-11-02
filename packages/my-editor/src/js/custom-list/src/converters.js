@@ -39,7 +39,7 @@ export function modelViewInsertion(model) {
         ) {
             return;
         }
-
+        console.log('進去');
         consumable.consume(data.item, 'insert');
         consumable.consume(data.item, 'attribute:listType');
         consumable.consume(data.item, 'attribute:listIndent');
@@ -636,7 +636,6 @@ export function modelChangePostFixer(model, writer) {
     let applied = false;
 
     for (const entry of changes) {
-        console.log('entry',entry)
         if (entry.type == 'insert' && entry.name == 'listItem') {
             _addListToFix(entry.position);
         } else if (entry.type == 'insert' && entry.name != 'listItem') {
@@ -775,12 +774,12 @@ export function modelChangePostFixer(model, writer) {
         let prevIndent = -1;
         let chinesArr;
         while (item && item.is('element', 'listItem')) {
-            console.warn(
-                '--*----------------',
-                item,
-                item.getAttribute('listType'),
-                item.getAttribute('listStyle')
-            );
+            // console.warn(
+            //     '--*----------------',
+            //     item,
+            //     item.getAttribute('listType'),
+            //     item.getAttribute('listStyle')
+            // );
             if (item.getAttribute('listType') !== 'numbered') {
                 item = item.nextSibling;
                 continue;
@@ -802,11 +801,7 @@ export function modelChangePostFixer(model, writer) {
                 const filterArr = dataContainerArr.filter((item) => {
                     return item.indent === currIndent;
                 });
-                console.log(
-                    'waa',
-                    filterArr,
-                    filterArr[filterArr.length - 1].indent
-                );
+                
 
                 count = filterArr[filterArr.length - 1].index + 1;
             }
@@ -826,7 +821,6 @@ export function modelChangePostFixer(model, writer) {
             dataContainerArr.push(tmpObj);
             function changChines(indent, count,arr) {
                 const chinesArr = arr;
-				console.log('--', indent, count, arr);
 
                 let num = count + 1; //陣列從0開始因此+1
                 let targetArr = chinesArr[indent];
@@ -835,21 +829,18 @@ export function modelChangePostFixer(model, writer) {
 				}
                 if (num < 11) {
                     //這邊是到10
-                    console.log('firstNum--', num, targetArr[num - 1]);
                     return targetArr[num - 1];
                 } else if (num < 20) {
                     //10-19 EX十一
                     const firstText = chinesArr[0][9]; //十
                     const secNum = getDigit(num, 2, true) - 1;
                     const secText = targetArr[secNum];
-                    console.log('firstNum', secNum);
                     return `${firstText}${secText}`;
                 } else if (num % 10 === 0) {
                     //EX二十
                     const firstNum = getDigit(num, 1, true) - 1;
                     const firstText = targetArr[firstNum];
                     const secText = chinesArr[0][9]; //十
-                    console.log('/*/*/*', firstNum);
 
                     return `${firstText}${secText}`;
                 } else {
@@ -860,7 +851,6 @@ export function modelChangePostFixer(model, writer) {
                     const thirdNum = getDigit(num, 2, true) - 1;
                     const thirdText = targetArr[thirdNum];
 
-                    console.log('****', firstNum, thirdNum);
 
                     return `${firstText}${secText}${thirdText}`;
                 }

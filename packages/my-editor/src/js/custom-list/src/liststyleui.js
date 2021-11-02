@@ -44,6 +44,7 @@ export default class ListStyleUI extends Plugin {
 	}
 
 	init() {
+		console.warn('初始化');
 		const editor = this.editor;
 		const t = editor.locale.t;
 
