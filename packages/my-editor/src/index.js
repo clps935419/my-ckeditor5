@@ -82,7 +82,6 @@ function ClipboardButtons(editor) {
 }
 class ListStartAttribute extends Plugin {
     init() {
-        console.log('ListStartAttribute is init');
         const editor = this.editor;
 
         // 1.extend schema

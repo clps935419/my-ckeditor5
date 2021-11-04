@@ -5,11 +5,14 @@ import ButtonView from '@ckeditor/ckeditor5-ui/src/button/buttonview';
 import linkIcon from '@ckeditor/ckeditor5-link/theme/icons/link.svg';
 
 import LinkForm from './test.js';
+import ListStyleUI from '../custom-list/src/liststyleui';
+
 
 
 import numberedListIcon from '../custom-list/theme/icons/numberedlist.svg';
 import personal from '../custom-list/theme/icons/personal.svg';
 import personalBlue from '../custom-list/theme/icons/personal-blue.svg';
+import ClassicEditor from '../../../src/index.js';
 
 import {
     COMMAND_NAME__LINK,
@@ -26,9 +29,11 @@ export default class LinkToolbarUI extends Plugin {
         const editor = this.editor;
         // COMMAND_NAME__LINK -> 'link'
         const linkCommand = editor.commands.get(COMMAND_NAME__LINK);
+            console.log('---產生');
 
         // TOOLBAR_NAME__LINK -> 'ck-link'
         editor.ui.componentFactory.add(TOOLBAR_NAME__LINK, (locale) => {
+            console.log('產生');
             const view = new ButtonView(locale);
             view.set({
                 // TOOLBAR_LABEL__LINK -> '超链接'
@@ -49,48 +54,96 @@ export default class LinkToolbarUI extends Plugin {
 
     // value 为已设置的超链接，作为初始值传给弹窗表单
     _openDialog(value) {
+        const editor = this.editor;
+        const t = editor.locale.t;
+        const _this = this;
+        const editorId = editor.sourceElement.id;
+
+
         // 在弹窗中触发命令
         new LinkForm({
             value,
-            onSubmit: (href) => {
-                const editor = this.editor;
-                const t = editor.locale.t;
-                editor.ui.componentFactory.add(
-                    'numberedList',
-                    getSplitButtonCreator({
-                        editor,
-                        parentCommandName: 'numberedList',
-                        buttonLabel: t('Numbered List'),
-                        buttonIcon: numberedListIcon,
-                        toolbarAriaLabel: t('Numbered list styles toolbar'),
-                        styleDefinitions: [
-                            {
-                                label: t('test1'),
-                                tooltip: t('test1'),
-                                type: 'test1',
-                                icon: personal,
-                            },
-                            {
-                                label: t('test2'),
-                                tooltip: t('test2'),
-                                type: 'test4',
-                                icon: personalBlue,
-                            },
-                            {
-                                label: t('test3'),
-                                tooltip: t('test3'),
-                                type: 'test3',
-                                icon: personal,
-                            },
-                            {
-                                label: t('test4'),
-                                tooltip: t('test4'),
-                                type: 'test4',
-                                icon: personalBlue,
-                            },
-                        ],
-                    })
-                );
+            onSubmit: (val) => {
+                console.log('editor', editor);
+                //write dynamically add item in dropdown
+                editor.destroy().then(() => {
+                    let data = JSON.parse(sessionStorage.getItem(editorId));
+
+                    console.log('data',data);
+                    data.push(
+                        {
+                            label: t('test3'),
+                            tooltip: t('test3'),
+                            type: 'test3',
+                            icon: personal,
+                        },
+                        {
+                            label: t('test4'),
+                            tooltip: t('test4'),
+                            type: 'test4',
+                            icon: personal,
+                        }
+                    );
+		            sessionStorage.setItem(editorId, JSON.stringify(data));
+                    
+                    ClassicEditor.create(document.querySelector('#editor-area'))
+                        .then((editor) => {
+                            console.log('Editor was initialized', editor);
+                        })
+                        .catch((err) => {
+                            console.error(err.stack);
+                        });
+                });
+                
+                
+
+
+
+
+
+
+
+
+
+
+
+                // editor.ui.componentFactory.add(
+                //     'numberedList',
+                //     getSplitButtonCreator({
+                //         editor,
+                //         parentCommandName: 'numberedList',
+                //         buttonLabel: t('Numbered List'),
+                //         buttonIcon: numberedListIcon,
+                //         toolbarAriaLabel: t('Numbered list styles toolbar'),
+                //         styleDefinitions: [
+                //             {
+                //                 label: t('test1'),
+                //                 tooltip: t('test1'),
+                //                 type: 'test1',
+                //                 icon: personal,
+                //             },
+                //             {
+                //                 label: t('test2'),
+                //                 tooltip: t('test2'),
+                //                 type: 'test4',
+                //                 icon: personalBlue,
+                //             },
+                //             {
+                //                 label: t('test3'),
+                //                 tooltip: t('test3'),
+                //                 type: 'test3',
+                //                 icon: personal,
+                //             },
+                //             {
+                //                 label: t('test4'),
+                //                 tooltip: t('test4'),
+                //                 type: 'test4',
+                //                 icon: personalBlue,
+                //             },
+                //         ],
+                //     })
+                // );
+                console.log('ui', editor.ui.componentFactory);
                 function getSplitButtonCreator({
                     editor,
                     parentCommandName,
@@ -102,10 +155,17 @@ export default class LinkToolbarUI extends Plugin {
                     const parentCommand =
                         editor.commands.get(parentCommandName);
                     const listStyleCommand = editor.commands.get('listStyle');
+                        console.log(
+                            '進-----------------------------',
+                            listStyleCommand,
+                            parentCommand
+                        );
 
                     // @param {module:utils/locale~Locale} locale
                     // @returns {module:ui/dropdown/dropdownview~DropdownView}
-                    return (locale) => {
+                    return locale => {
+                        console.log('進-----------------------------2222');
+                        
                         const dropdownView = createDropdown(
                             locale,
                             SplitButtonView
@@ -141,7 +201,6 @@ export default class LinkToolbarUI extends Plugin {
                         splitButtonView
                             .bind('isOn')
                             .to(parentCommand, 'value', (value) => !!value);
-
                         return dropdownView;
                     };
                 }

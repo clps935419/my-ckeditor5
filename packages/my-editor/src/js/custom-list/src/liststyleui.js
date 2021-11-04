@@ -8,23 +8,23 @@
  */
 
 import { Plugin } from 'ckeditor5/src/core';
-import { ButtonView, SplitButtonView, createDropdown, addToolbarToDropdown } from 'ckeditor5/src/ui';
-
+import { addToolbarToDropdown, ButtonView, createDropdown, SplitButtonView } from 'ckeditor5/src/ui';
 import bulletedListIcon from '../theme/icons/bulletedlist.svg';
-import numberedListIcon from '../theme/icons/numberedlist.svg';
-
-import listStyleDiscIcon from '../theme/icons/liststyledisc.svg';
 import listStyleCircleIcon from '../theme/icons/liststylecircle.svg';
-import listStyleSquareIcon from '../theme/icons/liststylesquare.svg';
 import listStyleDecimalIcon from '../theme/icons/liststyledecimal.svg';
 import listStyleDecimalWithLeadingZeroIcon from '../theme/icons/liststyledecimalleadingzero.svg';
-import listStyleLowerRomanIcon from '../theme/icons/liststylelowerroman.svg';
-import listStyleUpperRomanIcon from '../theme/icons/liststyleupperroman.svg';
+import listStyleDiscIcon from '../theme/icons/liststyledisc.svg';
 import listStyleLowerLatinIcon from '../theme/icons/liststylelowerlatin.svg';
+import listStyleLowerRomanIcon from '../theme/icons/liststylelowerroman.svg';
+import listStyleSquareIcon from '../theme/icons/liststylesquare.svg';
 import listStyleUpperLatinIcon from '../theme/icons/liststyleupperlatin.svg';
-import personal from '../theme/icons/personal.svg';
+import listStyleUpperRomanIcon from '../theme/icons/liststyleupperroman.svg';
+import numberedListIcon from '../theme/icons/numberedlist.svg';
 import personalBlue from '../theme/icons/personal-blue.svg';
+import personal from '../theme/icons/personal.svg';
 import '../theme/liststyles.css';
+
+
 
 /**
  * The list style UI plugin. It introduces the extended `'bulletedList'` and `'numberedList'` toolbar
@@ -44,9 +44,29 @@ export default class ListStyleUI extends Plugin {
 	}
 
 	init() {
-		console.warn('初始化');
 		const editor = this.editor;
+		console.warn('初始化', editor);
+		const editorId = editor.sourceElement.id;
+
 		const t = editor.locale.t;
+		const defaultSetArr = [
+            {
+                label: t('test1'),
+                tooltip: t('test1'),
+                type: 'test1',
+                icon: personal,
+            },
+            {
+                label: t('test2'),
+                tooltip: t('test2'),
+                type: 'test2',
+                icon: personalBlue,
+            },
+        ];
+		console.log(JSON.parse(sessionStorage.getItem(editorId)));
+
+		const currentSetArr = JSON.parse(sessionStorage.getItem(editorId)) || defaultSetArr;
+		sessionStorage.setItem(editorId, JSON.stringify(currentSetArr));
 
 		editor.ui.componentFactory.add( 'bulletedList', getSplitButtonCreator( {
 			editor,
@@ -84,58 +104,7 @@ export default class ListStyleUI extends Plugin {
                 buttonLabel: t('Numbered List'),
                 buttonIcon: numberedListIcon,
                 toolbarAriaLabel: t('Numbered list styles toolbar'),
-                styleDefinitions: [
-                    // {
-                    //     label: t('Toggle the decimal list style'),
-                    //     tooltip: t('Decimal'),
-                    //     type: 'decimal',
-                    //     icon: listStyleDecimalIcon,
-                    // },
-                    // {
-                    //     label: t(
-                    //         'Toggle the decimal with leading zero list style'
-                    //     ),
-                    //     tooltip: t('Decimal with leading zero'),
-                    //     type: 'decimal-leading-zero',
-                    //     icon: listStyleDecimalWithLeadingZeroIcon,
-                    // },
-                    // {
-                    //     label: t('Toggle the lower–roman list style'),
-                    //     tooltip: t('Lower–roman'),
-                    //     type: 'lower-roman',
-                    //     icon: listStyleLowerRomanIcon,
-                    // },
-                    // {
-                    //     label: t('Toggle the upper–roman list style'),
-                    //     tooltip: t('Upper-roman'),
-                    //     type: 'upper-roman',
-                    //     icon: listStyleUpperRomanIcon,
-                    // },
-                    // {
-                    //     label: t('Toggle the lower–latin list style'),
-                    //     tooltip: t('Lower-latin'),
-                    //     type: 'lower-latin',
-                    //     icon: listStyleLowerLatinIcon,
-                    // },
-                    // {
-                    //     label: t('Toggle the upper–latin list style'),
-                    //     tooltip: t('Upper-latin'),
-                    //     type: 'upper-latin',
-                    //     icon: listStyleUpperLatinIcon,
-                    // },
-                    {
-                        label: t('test1'),
-                        tooltip: t('test1'),
-                        type: 'test1',
-                        icon: personal,
-                    },
-                    {
-                        label: t('test2'),
-                        tooltip: t('test2'),
-                        type: 'test2',
-                        icon: personalBlue,
-                    },
-                ],
+                styleDefinitions: currentSetArr,
             })
         );
 	}
@@ -156,21 +125,29 @@ export default class ListStyleUI extends Plugin {
 function getSplitButtonCreator( { editor, parentCommandName, buttonLabel, buttonIcon, toolbarAriaLabel, styleDefinitions } ) {
 	const parentCommand = editor.commands.get( parentCommandName );
 	const listStyleCommand = editor.commands.get( 'listStyle' );
-
+	console.log('進1', listStyleCommand);
 	// @param {module:utils/locale~Locale} locale
 	// @returns {module:ui/dropdown/dropdownview~DropdownView}
 	return locale => {
+	console.log('進2');
+
 		const dropdownView = createDropdown( locale, SplitButtonView );
 		const splitButtonView = dropdownView.buttonView;
 		const styleButtonCreator = getStyleButtonCreator( { editor, parentCommandName, listStyleCommand } );
-
+		
 		addToolbarToDropdown( dropdownView, styleDefinitions.map( styleButtonCreator ) );
 
 		dropdownView.bind( 'isEnabled' ).to( parentCommand );
 		dropdownView.toolbarView.ariaLabel = toolbarAriaLabel;
 		dropdownView.class = 'ck-list-styles-dropdown';
-
+		//打開下拉
+		dropdownView.on('change:isOpen', (eventInfo, name, value, oldValue) => {
+            console.log('ffffffffff', eventInfo, name, value, oldValue);
+        });
+		
 		splitButtonView.on( 'execute', () => {
+			console.log('打開----');
+
 			editor.execute( parentCommandName );
 			editor.editing.view.focus();
 		} );
@@ -183,7 +160,8 @@ function getSplitButtonCreator( { editor, parentCommandName, buttonLabel, button
 		} );
 
 		splitButtonView.bind( 'isOn' ).to( parentCommand, 'value', value => !!value );
-
+			console.log('測試11', dropdownView);
+		
 		return dropdownView;
 	};
 }
@@ -200,7 +178,7 @@ function getSplitButtonCreator( { editor, parentCommandName, buttonLabel, button
 function getStyleButtonCreator( { editor, listStyleCommand, parentCommandName } ) {
 	const locale = editor.locale;
 	const parentCommand = editor.commands.get( parentCommandName );
-
+	console.log('進')
 	// @param {String} label The label of the style button.
 	// @param {String} type The type of the style button (e.g. "roman" or "circle").
 	// @param {String} icon The SVG string of an icon of the style button.
@@ -208,12 +186,13 @@ function getStyleButtonCreator( { editor, listStyleCommand, parentCommandName } 
 	// @returns {module:ui/button/buttonview~ButtonView}
 	return ( { label, type, icon, tooltip } ) => {
 		const button = new ButtonView( locale );
+            console.log('execute', listStyleCommand);
 
 		button.set( { label, icon, tooltip } );
-
 		listStyleCommand.on( 'change:value', () => {
 			button.isOn = listStyleCommand.value === type;
 		} );
+		
 
 		button.on( 'execute', () => {
 			// If the content the selection is anchored to is a list, let's change its style.

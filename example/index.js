@@ -12,20 +12,20 @@ ClassicEditor.create(document.querySelector('#editor-area'))
     .catch((error) => {
         console.error('There was a problem initializing the editor.', error);
     });
-ClassicEditor.create(document.querySelector('#editor-area2'))
-    .then((editor) => {
-        CKEditorInspector.attach(editor);
-        document.querySelector('#submit2').addEventListener(
-            'click',
-            () => {
-                console.log('get', editor.getData());
-            },
-            false
-        );
-    })
-    .catch((error) => {
-        console.error('There was a problem initializing the editor.', error);
-    });    
+// ClassicEditor.create(document.querySelector('#editor-area2'))
+//     .then((editor) => {
+//         CKEditorInspector.attach(editor);
+//         document.querySelector('#submit2').addEventListener(
+//             'click',
+//             () => {
+//                 console.log('get', editor.getData());
+//             },
+//             false
+//         );
+//     })
+//     .catch((error) => {
+//         console.error('There was a problem initializing the editor.', error);
+//     });    
 
 
 

@@ -26,7 +26,7 @@ export default class LinkForm {
         });
 
         const dialog = this.$form.$pop;
-        this.$input = dialog.querySelector(`input[name=linkValue]`);
+        this.$select = dialog.querySelectorAll(`select[name=linkValue]`);
         this.$cleanButton = dialog.querySelector('.link-form-button');
 
         this._bind();
@@ -37,10 +37,10 @@ export default class LinkForm {
     }
 
     _bind() {
-        this.$cleanButton.addEventListener(
-            'click',
-            this._handleCleanup.bind(this)
-        );
+        // this.$cleanButton.addEventListener(
+        //     'click',
+        //     this._handleCleanup.bind(this)
+        // );
     }
 
     _unbind() {
@@ -58,8 +58,14 @@ export default class LinkForm {
         if (typeof this.onSubmit !== 'function') {
             return;
         }
+        let tmpDataArr = [];
+        console.log('ie', this.$select);
 
-        return this.onSubmit(this.$input.value);
+        this.$select.forEach((item) => {
+            console.log('ie',item.value);
+            tmpDataArr.push(item.value);
+        })
+        return this.onSubmit(tmpDataArr);
     }
 
     _handleCleanup() {
@@ -68,22 +74,59 @@ export default class LinkForm {
 }
 
 function template(initialValue) {
+    const dataArr =['一','甲'];
     const body = `
     <div class="link-form">
-      <input
-        placeholder="插入链接为空时取消超链接"
-        type="text"
-        class="link-form-input"
-        name="linkValue"
-        value="${initialValue || ''}"
-      />
-      <span title="清空" class="link-form-button">X</span>
+      <div>
+        <span>第一層</span>
+        <span>
+            <select name=linkValue>
+                <option value ="a">一、二</option>
+                <option value ="b">甲、乙</option>
+                <option value ="c">1、2</option>
+                <option value ="d">子</option>
+            </select >
+        </span>
+      </div>  
+      <div>
+        <span>第二層</span>
+        <span>
+            <select name=linkValue>
+                <option value ="a">一、二</option>
+                <option value ="b">甲、乙</option>
+                <option value ="c">1、2</option>
+                <option value ="d">子</option>
+            </select>
+        </span>
+      </div> 
+      <div>
+        <span>第三層</span>
+        <span>
+            <select name=linkValue>
+                <option value ="a">一、二</option>
+                <option value ="b">甲、乙</option>
+                <option value ="c">1、2</option>
+                <option value ="d">子</option>
+            </select>
+        </span>
+      </div> 
+      <div>
+        <span>第四層</span>
+        <span>
+            <select name=linkValue>
+                <option value ="a">一、二</option>
+                <option value ="b">甲、乙</option>
+                <option value ="c">1、2</option>
+                <option value ="d">子</option>
+            </select>
+        </span>
+      </div> 
     </div>
   `;
 
     return {
         classes: 'link-form-dialog',
-        title: '插入超链接',
+        title: '請選擇樣式',
         body,
     };
 }

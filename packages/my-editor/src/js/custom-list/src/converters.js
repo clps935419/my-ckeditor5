@@ -39,7 +39,6 @@ export function modelViewInsertion(model) {
         ) {
             return;
         }
-        console.log('進去');
         consumable.consume(data.item, 'insert');
         consumable.consume(data.item, 'attribute:listType');
         consumable.consume(data.item, 'attribute:listIndent');

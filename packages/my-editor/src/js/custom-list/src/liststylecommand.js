@@ -41,6 +41,7 @@ export default class ListStyleCommand extends Command {
 	refresh() {
 		this.value = this._getValue();
 		this.isEnabled = this._checkEnabled();
+
 	}
 
 	/**
@@ -61,7 +62,6 @@ export default class ListStyleCommand extends Command {
 			.filter( element => element.is( 'element', 'listItem' ) )
 			.map( element => {
 				const position = model.change( writer => writer.createPositionAt( element, 0 ) );
-
 				return [
 					...getSiblingNodes( position, 'backward' ),
 					...getSiblingNodes( position, 'forward' )

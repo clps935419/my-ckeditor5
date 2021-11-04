@@ -243,13 +243,13 @@ function downcastListStyleAttribute() {
 				direction: 'backward'
 			} );
 			const viewItem = conversionApi.mapper.toViewElement( currentElement );
-			console.log(
-                '---*---',
-                currentElement,
-                previousElement,
-                viewItem,
-                viewItem.parent
-            );
+			// console.log(
+            //     '---*---',
+            //     currentElement,
+            //     previousElement,
+            //     viewItem,
+            //     viewItem.parent
+            // );
 			
 			// A case when elements represent different lists. We need to separate their container.
 			if ( !areRepresentingSameList( currentElement, previousElement ) ) {
@@ -302,6 +302,7 @@ function downcastListStyleAttribute() {
 // @returns {Function}
 function fixListAfterIndentListCommand( editor ) {
 	return ( evt, changedItems ) => {
+
 		let valueToSet;
 		const root = changedItems[ 0 ];
 		const rootIndent = root.getAttribute( 'listIndent' );
@@ -326,7 +327,6 @@ function fixListAfterIndentListCommand( editor ) {
 
 			valueToSet = previousSibling.getAttribute( 'listStyle' );
 		}
-		console.log('進去-------', valueToSet);
 
 
 		editor.model.change( writer => {
@@ -453,6 +453,7 @@ function fixListAfterOutdentListCommand( editor ) {
 // @returns {Function}
 function fixListStyleAttributeOnListItemElements( editor ) {
 	return writer => {
+
 		let wasFixed = false;
 		const insertedListItems = getChangedListItems( editor.model.document.differ.getChanges() )
 			.filter( item => {
@@ -594,12 +595,12 @@ function shouldInheritListTypeFromPreviousItem( previousItem, itemToChange ) {
 	}
 
 	const previousItemListStyle = previousItem.getAttribute( 'listStyle' );
-	console.log(
-        '****',
-		previousItem,
-        previousItemListStyle,
-        itemToChange.getAttribute('listStyle')
-    );
+	// console.log(
+    //     '****',
+	// 	previousItem,
+    //     previousItemListStyle,
+    //     itemToChange.getAttribute('listStyle')
+    // );
 	if ( !previousItemListStyle || previousItemListStyle === itemToChange.getAttribute( 'listStyle' ) ) {
 		return false;
 	}
