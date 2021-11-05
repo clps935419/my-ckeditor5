@@ -125,11 +125,9 @@ export default class ListStyleUI extends Plugin {
 function getSplitButtonCreator( { editor, parentCommandName, buttonLabel, buttonIcon, toolbarAriaLabel, styleDefinitions } ) {
 	const parentCommand = editor.commands.get( parentCommandName );
 	const listStyleCommand = editor.commands.get( 'listStyle' );
-	console.log('進1', listStyleCommand);
 	// @param {module:utils/locale~Locale} locale
 	// @returns {module:ui/dropdown/dropdownview~DropdownView}
 	return locale => {
-	console.log('進2');
 
 		const dropdownView = createDropdown( locale, SplitButtonView );
 		const splitButtonView = dropdownView.buttonView;
@@ -186,7 +184,6 @@ function getStyleButtonCreator( { editor, listStyleCommand, parentCommandName } 
 	// @returns {module:ui/button/buttonview~ButtonView}
 	return ( { label, type, icon, tooltip } ) => {
 		const button = new ButtonView( locale );
-            console.log('execute', listStyleCommand);
 
 		button.set( { label, icon, tooltip } );
 		listStyleCommand.on( 'change:value', () => {
@@ -197,18 +194,23 @@ function getStyleButtonCreator( { editor, listStyleCommand, parentCommandName } 
 		button.on( 'execute', () => {
 			// If the content the selection is anchored to is a list, let's change its style.
 			if ( parentCommand.value ) {
+				console.log('--***-', parentCommand, listStyleCommand, type);
+
 				// If the current list style is not set in the model or the style is different than the
 				// one to be applied, simply apply the new style.
 				if ( listStyleCommand.value !== type ) {
+					console.log('typ---', listStyleCommand.value,type);
 					editor.execute( 'listStyle', { type } );
 				}
 				// If the style was the same, remove it (the button works as an off toggle).
 				else {
+					console.log('---', listStyleCommand._defaultType);
 					editor.execute( 'listStyle', { type: listStyleCommand._defaultType } );
 				}
 			}
 			// If the content the selection is anchored to is not a list, let's create a list of a desired style.
 			else {
+				console.log('ano',type)
 				editor.model.change( () => {
 					editor.execute( parentCommandName );
 					editor.execute( 'listStyle', { type } );

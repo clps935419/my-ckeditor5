@@ -773,12 +773,12 @@ export function modelChangePostFixer(model, writer) {
         let prevIndent = -1;
         let chinesArr;
         while (item && item.is('element', 'listItem')) {
-            // console.warn(
-            //     '--*----------------',
-            //     item,
-            //     item.getAttribute('listType'),
-            //     item.getAttribute('listStyle')
-            // );
+            console.warn(
+                '--*----------------',
+                item,
+                item.getAttribute('listType'),
+                item.getAttribute('listStyle')
+            );
             if (item.getAttribute('listType') !== 'numbered') {
                 item = item.nextSibling;
                 continue;
@@ -820,7 +820,7 @@ export function modelChangePostFixer(model, writer) {
             dataContainerArr.push(tmpObj);
             function changChines(indent, count,arr) {
                 const chinesArr = arr;
-
+                // console.log('---', indent, count, arr);
                 let num = count + 1; //陣列從0開始因此+1
                 let targetArr = chinesArr[indent];
 				if(targetArr === undefined){

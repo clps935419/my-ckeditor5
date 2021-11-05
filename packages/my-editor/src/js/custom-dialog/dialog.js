@@ -133,7 +133,7 @@ function template(config) {
         </div>
         <div class="dialog-footer">
           <button class="dialog-button dialog-button_cancel">取消</button>
-          <button class="dialog-button button-primary dialog-button_submit">确认</button>
+          <button class="dialog-button button-primary dialog-button_submit">確認</button>
         </div>
       </div>
       <div class="dialog-mask"></div>

@@ -55,13 +55,14 @@ export default class ListStyleCommand extends Command {
 	execute( options = {} ) {
 		const model = this.editor.model;
 		const document = model.document;
-
 		// For all selected blocks find all list items that are being selected
 		// and update the `listStyle` attribute in those lists.
 		let listItems = [ ...document.selection.getSelectedBlocks() ]
 			.filter( element => element.is( 'element', 'listItem' ) )
 			.map( element => {
 				const position = model.change( writer => writer.createPositionAt( element, 0 ) );
+				console.log('測試----',position, getSiblingNodes(position, 'backward'));
+
 				return [
 					...getSiblingNodes( position, 'backward' ),
 					...getSiblingNodes( position, 'forward' )
@@ -79,6 +80,8 @@ export default class ListStyleCommand extends Command {
 
 		model.change( writer => {
 			for ( const item of listItems ) {
+				console.log('測試', item, options.type);
+
 				writer.setAttribute( 'listStyle', options.type || this._defaultType, item );
 			}
 		} );

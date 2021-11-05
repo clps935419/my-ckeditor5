@@ -13,7 +13,8 @@ import numberedListIcon from '../custom-list/theme/icons/numberedlist.svg';
 import personal from '../custom-list/theme/icons/personal.svg';
 import personalBlue from '../custom-list/theme/icons/personal-blue.svg';
 import ClassicEditor from '../../../src/index.js';
-
+import { listArr, chinesObj, updateArr } from '../custom_data/index';
+import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
 import {
     COMMAND_NAME__LINK,
     TOOLBAR_NAME__LINK,
@@ -64,31 +65,35 @@ export default class LinkToolbarUI extends Plugin {
         new LinkForm({
             value,
             onSubmit: (val) => {
-                console.log('editor', editor);
+                console.log('editor', editor, 'val', val, listArr, chinesObj);
+                const currArr = val.map(item => {
+                    return chinesObj[item];
+                });
+                const keyName = `cus${Object.keys(listArr).length + 1}`;
+                updateArr(keyName, currArr);
+                console.log('editor----', listArr);
+                console.log('getData----', editor.getData());
+
                 //write dynamically add item in dropdown
                 editor.destroy().then(() => {
                     let data = JSON.parse(sessionStorage.getItem(editorId));
 
-                    console.log('data',data);
                     data.push(
                         {
-                            label: t('test3'),
-                            tooltip: t('test3'),
-                            type: 'test3',
-                            icon: personal,
-                        },
-                        {
-                            label: t('test4'),
-                            tooltip: t('test4'),
-                            type: 'test4',
+                            label: t(keyName),
+                            tooltip: t(keyName),
+                            type: keyName,
                             icon: personal,
                         }
                     );
+                    console.log('data', data);
+
 		            sessionStorage.setItem(editorId, JSON.stringify(data));
                     
                     ClassicEditor.create(document.querySelector('#editor-area'))
                         .then((editor) => {
                             console.log('Editor was initialized', editor);
+                            CKEditorInspector.attach(editor);
                         })
                         .catch((err) => {
                             console.error(err.stack);
