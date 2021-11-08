@@ -86,7 +86,7 @@ class ListStartAttribute extends Plugin {
 
         // 1.extend schema
         editor.model.schema.extend('listItem', {
-            allowAttributes: 'data-content'
+            allowAttributes: 'data-content',
         });
 
         // 2.set conversion up/down
@@ -103,23 +103,74 @@ class ListStartAttribute extends Plugin {
                         data.item
                     );
                     const containerElement = viewElement.parent;
-
+                    const listStyle = data['item']['_attrs'].get('listStyle');
+                    const indent = data['item']['_attrs'].get('listIndent');
                     if (true) {
                         // console.log(
                         //     'data',
+                        //     containerElement,
                         //     viewElement,
                         //     data,
                         //     data.attributeKey,
                         //     data.attributeNewValue
                         // );
+                        console.log(
+                            'data',
+                            data,
+                            data['item']['_attrs'],
+                            data['item']['_attrs'].get('listStyle')
+                        );
                         viewWriter.setAttribute(
                             data.attributeKey,
                             data.attributeNewValue,
                             viewElement
                         );
-                        // viewWriter.setAttribute(
+                        if(indent === 0){
+                            viewWriter.setAttribute(
+                                'list-style',
+                                listStyle,
+                                containerElement
+                            );
+                        }
+                        
+                        // viewWriter.setAttribute('index', index, viewElement);
+                    }
+                }
+            );
+        });
+        editor.conversion.for('downcast').add((dispatcher) => {
+            dispatcher.on(
+                'attribute:listStyle',
+                (evt, data, conversionApi) => {
+                    if (data.item.name != 'listItem') {
+                        return;
+                    }
+
+                    const viewWriter = conversionApi.writer;
+                    const viewElement = conversionApi.mapper.toViewElement(
+                        data.item
+                    );
+                    const containerElement = viewElement.parent;
+                    const listStyle = data['item']['_attrs'].get('listStyle');
+                    const indent = data['item']['_attrs'].get('listIndent');
+                    if (true) {
+                        // console.log(
+                        //     'data',
+                        //     containerElement,
+                        //     viewElement,
+                        //     data,
+                        //     data.attributeKey,
+                        //     data.attributeNewValue
+                        // );
+                        console.log(
+                            'data---------------',
+                            data,
+                            data.attributeKey,
+                            data.attributeNewValue
+                        );
+                        // viewWriter.setStyle(
                         //     'list-style-type',
-                        //     'none',
+                        //     data.attributeNewValue,
                         //     containerElement
                         // );
                         // viewWriter.setAttribute('index', index, viewElement);
@@ -213,6 +264,12 @@ ClassicEditor.defaultConfig = {
     },
     fontSize: {
         options: [12, 14, '預設', 16, 18, 20, 22, 24, 26, 28, 30],
-    },
+    },// if(indent === 0){
+                        //     viewWriter.setAttribute(
+                        //         'listStyle',
+                        //         listStyle,
+                        //         containerElement
+                        //     );
+                        // }
 };
 

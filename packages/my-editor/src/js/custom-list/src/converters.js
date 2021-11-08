@@ -429,7 +429,6 @@ export function viewModelConverter(evt, data, conversionApi) {
             data.viewItem.getChildren(),
             conversionApi
         );
-
         // Result range starts before the first item and ends after the last.
         data.modelRange = writer.createRange(data.modelCursor, nextPosition);
 
@@ -806,6 +805,10 @@ export function modelChangePostFixer(model, writer) {
             }
             tmpObj.index = count;
             if(tmpObj.indent === 0){
+                console.log(
+                    '********************',
+                    item.getAttribute('listStyle')
+                );
                 chinesArr = listArr[item.getAttribute('listStyle') || 'default'];
             }
             //轉中文

@@ -61,7 +61,7 @@ export default class ListStyleCommand extends Command {
 			.filter( element => element.is( 'element', 'listItem' ) )
 			.map( element => {
 				const position = model.change( writer => writer.createPositionAt( element, 0 ) );
-				console.log('測試----',position, getSiblingNodes(position, 'backward'));
+				console.log('測試*****----',position, getSiblingNodes(position, 'backward'));
 
 				return [
 					...getSiblingNodes( position, 'backward' ),
@@ -80,7 +80,7 @@ export default class ListStyleCommand extends Command {
 
 		model.change( writer => {
 			for ( const item of listItems ) {
-				console.log('測試', item, options.type);
+				console.log('測試-------', item, options.type);
 
 				writer.setAttribute( 'listStyle', options.type || this._defaultType, item );
 			}

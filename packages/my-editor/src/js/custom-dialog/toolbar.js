@@ -70,14 +70,16 @@ export default class LinkToolbarUI extends Plugin {
                     return chinesObj[item];
                 });
                 const keyName = `cus${Object.keys(listArr).length + 1}`;
+                const lastData = editor
+                    .getData()
+                    .replace(/list-style="/g, 'style="list-style-type:');
                 updateArr(keyName, currArr);
                 console.log('editor----', listArr);
-                console.log('getData----', editor.getData());
+                console.log('getData----', editor.getData().replace(/list-style="/g,'style="list-style-type:'));
 
                 //write dynamically add item in dropdown
                 editor.destroy().then(() => {
                     let data = JSON.parse(sessionStorage.getItem(editorId));
-
                     data.push(
                         {
                             label: t(keyName),
@@ -86,13 +88,13 @@ export default class LinkToolbarUI extends Plugin {
                             icon: personal,
                         }
                     );
-                    console.log('data', data);
 
 		            sessionStorage.setItem(editorId, JSON.stringify(data));
                     
                     ClassicEditor.create(document.querySelector('#editor-area'))
                         .then((editor) => {
-                            console.log('Editor was initialized', editor);
+                            editor.setData(lastData);
+                            console.log('Editor was initialized', editor.getData());
                             CKEditorInspector.attach(editor);
                         })
                         .catch((err) => {
