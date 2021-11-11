@@ -45,7 +45,6 @@ export default class ListStyleUI extends Plugin {
 
 	init() {
 		const editor = this.editor;
-		console.warn('初始化', editor);
 		const editorId = editor.sourceElement.id;
 
 		const t = editor.locale.t;
@@ -63,7 +62,6 @@ export default class ListStyleUI extends Plugin {
                 icon: personalBlue,
             },
         ];
-		console.log(JSON.parse(sessionStorage.getItem(editorId)));
 
 		const currentSetArr = JSON.parse(sessionStorage.getItem(editorId)) || defaultSetArr;
 		sessionStorage.setItem(editorId, JSON.stringify(currentSetArr));
@@ -140,11 +138,9 @@ function getSplitButtonCreator( { editor, parentCommandName, buttonLabel, button
 		dropdownView.class = 'ck-list-styles-dropdown';
 		//打開下拉
 		dropdownView.on('change:isOpen', (eventInfo, name, value, oldValue) => {
-            console.log('ffffffffff', eventInfo, name, value, oldValue);
         });
 		
 		splitButtonView.on( 'execute', () => {
-			console.log('打開----');
 
 			editor.execute( parentCommandName );
 			editor.editing.view.focus();
@@ -158,7 +154,6 @@ function getSplitButtonCreator( { editor, parentCommandName, buttonLabel, button
 		} );
 
 		splitButtonView.bind( 'isOn' ).to( parentCommand, 'value', value => !!value );
-			console.log('測試11', dropdownView);
 		
 		return dropdownView;
 	};
@@ -176,7 +171,6 @@ function getSplitButtonCreator( { editor, parentCommandName, buttonLabel, button
 function getStyleButtonCreator( { editor, listStyleCommand, parentCommandName } ) {
 	const locale = editor.locale;
 	const parentCommand = editor.commands.get( parentCommandName );
-	console.log('進')
 	// @param {String} label The label of the style button.
 	// @param {String} type The type of the style button (e.g. "roman" or "circle").
 	// @param {String} icon The SVG string of an icon of the style button.
@@ -194,23 +188,19 @@ function getStyleButtonCreator( { editor, listStyleCommand, parentCommandName } 
 		button.on( 'execute', () => {
 			// If the content the selection is anchored to is a list, let's change its style.
 			if ( parentCommand.value ) {
-				console.log('--***-', parentCommand, listStyleCommand, type);
 
 				// If the current list style is not set in the model or the style is different than the
 				// one to be applied, simply apply the new style.
 				if ( listStyleCommand.value !== type ) {
-					console.log('typ---', listStyleCommand.value,type);
 					editor.execute( 'listStyle', { type } );
 				}
 				// If the style was the same, remove it (the button works as an off toggle).
 				else {
-					console.log('---', listStyleCommand._defaultType);
 					editor.execute( 'listStyle', { type: listStyleCommand._defaultType } );
 				}
 			}
 			// If the content the selection is anchored to is not a list, let's create a list of a desired style.
 			else {
-				console.log('ano',type)
 				editor.model.change( () => {
 					editor.execute( parentCommandName );
 					editor.execute( 'listStyle', { type } );

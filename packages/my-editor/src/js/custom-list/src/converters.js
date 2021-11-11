@@ -155,7 +155,6 @@ export function modelViewMergeAfterChangeType(evt, data, conversionApi) {
     // Merge the changed view list with other lists, if possible.
     mergeViewLists(viewWriter, viewList, viewList.nextSibling);
     mergeViewLists(viewWriter, viewList.previousSibling, viewList);
-
     // Consumable insertion of children inside the item. They are already handled by re-building the item in view.
     for (const child of data.item.getChildren()) {
         conversionApi.consumable.consume(child, 'insert');
@@ -179,7 +178,7 @@ export function modelViewChangeIndent(model) {
 
         const viewItem = conversionApi.mapper.toViewElement(data.item);
         const viewWriter = conversionApi.writer;
-
+        
         // 1. Break the container after and before the list item.
         // This will create a view list with one view list item -- the one that changed type.
         viewWriter.breakContainer(viewWriter.createPositionBefore(viewItem));
@@ -772,12 +771,12 @@ export function modelChangePostFixer(model, writer) {
         let prevIndent = -1;
         let chinesArr;
         while (item && item.is('element', 'listItem')) {
-            console.warn(
-                '--*----------------',
-                item,
-                item.getAttribute('listType'),
-                item.getAttribute('listStyle')
-            );
+            // console.warn(
+            //     '--*----------------',
+            //     item,
+            //     item.getAttribute('listType'),
+            //     item.getAttribute('listStyle')
+            // );
             if (item.getAttribute('listType') !== 'numbered') {
                 item = item.nextSibling;
                 continue;
@@ -805,10 +804,10 @@ export function modelChangePostFixer(model, writer) {
             }
             tmpObj.index = count;
             if(tmpObj.indent === 0){
-                console.log(
-                    '********************',
-                    item.getAttribute('listStyle')
-                );
+                // console.log(
+                //     '********************',
+                //     item.getAttribute('listStyle')
+                // );
                 chinesArr = listArr[item.getAttribute('listStyle') || 'default'];
             }
             //轉中文

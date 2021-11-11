@@ -67,7 +67,6 @@ function ClipboardButtons(editor) {
             });
 
             view.on('execute', () => {
-                console.log('this', this, locale, action);
                 if (action === 'paste') {
                     alert('Sorry man, no can do!');
                     document.execCommand(action);
@@ -114,12 +113,12 @@ class ListStartAttribute extends Plugin {
                         //     data.attributeKey,
                         //     data.attributeNewValue
                         // );
-                        console.log(
-                            'data',
-                            data,
-                            data['item']['_attrs'],
-                            data['item']['_attrs'].get('listStyle')
-                        );
+                        // console.log(
+                        //     'data',
+                        //     data,
+                        //     data['item']['_attrs'],
+                        //     data['item']['_attrs'].get('listStyle')
+                        // );
                         viewWriter.setAttribute(
                             data.attributeKey,
                             data.attributeNewValue,
@@ -138,46 +137,7 @@ class ListStartAttribute extends Plugin {
                 }
             );
         });
-        editor.conversion.for('downcast').add((dispatcher) => {
-            dispatcher.on(
-                'attribute:listStyle',
-                (evt, data, conversionApi) => {
-                    if (data.item.name != 'listItem') {
-                        return;
-                    }
-
-                    const viewWriter = conversionApi.writer;
-                    const viewElement = conversionApi.mapper.toViewElement(
-                        data.item
-                    );
-                    const containerElement = viewElement.parent;
-                    const listStyle = data['item']['_attrs'].get('listStyle');
-                    const indent = data['item']['_attrs'].get('listIndent');
-                    if (true) {
-                        // console.log(
-                        //     'data',
-                        //     containerElement,
-                        //     viewElement,
-                        //     data,
-                        //     data.attributeKey,
-                        //     data.attributeNewValue
-                        // );
-                        console.log(
-                            'data---------------',
-                            data,
-                            data.attributeKey,
-                            data.attributeNewValue
-                        );
-                        // viewWriter.setStyle(
-                        //     'list-style-type',
-                        //     data.attributeNewValue,
-                        //     containerElement
-                        // );
-                        // viewWriter.setAttribute('index', index, viewElement);
-                    }
-                }
-            );
-        });
+        
     }
 }
 export default class ClassicEditor extends ClassicEditorBase {};
