@@ -761,22 +761,20 @@ export function modelChangePostFixer(model, writer) {
         }
     }
 	function _customAddNumLi(item) {
-        // writer.setAttribute(
-        //     'listType',
-        //     'none',
-        //     item
-        // );
         let count = 0;
         let dataContainerArr = [];
         let prevIndent = -1;
         let chinesArr;
         while (item && item.is('element', 'listItem')) {
-            // console.warn(
-            //     '--*----------------',
-            //     item,
-            //     item.getAttribute('listType'),
-            //     item.getAttribute('listStyle')
-            // );
+            console.warn(
+                '--*----------------',
+                item,
+                item.getAttribute('listType'),
+                item.getAttribute('listStyle')
+            );
+            if(item.getAttribute('listStyle') === undefined){
+                console.log('***********-----',item);
+            }
             if (item.getAttribute('listType') !== 'numbered') {
                 item = item.nextSibling;
                 continue;
@@ -785,7 +783,7 @@ export function modelChangePostFixer(model, writer) {
             const tmpObj = {
                 indent: currIndent,
                 index: '',
-                listStyle: '',
+                listStyle: item.getAttribute('listStyle'),
             };
             if (prevIndent === currIndent) {
                 //同一階層就持續+1
@@ -803,6 +801,21 @@ export function modelChangePostFixer(model, writer) {
                 count = filterArr[filterArr.length - 1].index + 1;
             }
             tmpObj.index = count;
+
+            if(dataContainerArr.length > 0){
+                const firstObj = dataContainerArr.filter((item, index) => {
+                    return index === 0;
+                });
+                
+                tmpObj.listStyle = firstObj[0].listStyle;
+                console.log(
+                    '********************',
+                    firstObj[0],
+                    firstObj[0].listStyle,
+                    dataContainerArr,
+                    tmpObj
+                );
+            }
             if(tmpObj.indent === 0){
                 // console.log(
                 //     '********************',
@@ -817,6 +830,7 @@ export function modelChangePostFixer(model, writer) {
                 changChines(tmpObj.indent, tmpObj.index, chinesArr),
                 item
             );
+            writer.setAttribute('listStyle', tmpObj.listStyle, item);
             prevIndent = currIndent;
             item = item.nextSibling;
             dataContainerArr.push(tmpObj);

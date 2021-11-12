@@ -275,13 +275,7 @@ function upcastListItemStyle() {
                 const listItem =
                     data.modelRange.start.nodeAfter ||
                     data.modelRange.end.nodeBefore;
-                // console.warn(
-                //     'listStyle',
-                //     listParent,
-                //     listParent.getStyle('list-style-type'),
-                //     listItem,
-                //     listItem.getAttribute('listStyle')
-                // );
+                
                 // console.warn(
                 //     'Default',
                 //     listParent.getStyle('list-style-type'),
@@ -292,6 +286,13 @@ function upcastListItemStyle() {
                     'listStyle',
                     listStyle,
                     listItem
+                );
+                console.warn(
+                    'listStyle',
+                    listParent.getStyle('list-style-type'),
+                    listItem,
+                    data,
+                    listStyle,
                 );
             },
             { priority: 'low' }

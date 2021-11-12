@@ -42,6 +42,7 @@
 </style>
 
 <body>
+    <!-- 禁止用BR去換行否則LI會解析錯誤 -->
     <header>My CKEditor 5</header>
     <main>
         <div class="editor-container">
@@ -62,10 +63,10 @@
                     <li>123</li>
                     <li>123</li>
                 </ol>
-                <br>
+                <p></p>
                 <ol style="list-style-type:test2">
                     <li>
-                        123
+                        123456
                         <ol>
                             <li>321</li>
                             <li>321</li>
@@ -74,7 +75,24 @@
                             <li>321</li>
                         </ol>
                     </li>
+                    <li>123789</li>
                     <li>123</li>
+                    <li>123</li>
+                    <li>123</li>
+                </ol>
+                <p>---</p>
+                <ol style="list-style-type:test1">
+                    <li>
+                        123456789
+                        <ol>
+                            <li>321</li>
+                            <li>321</li>
+                            <li>321</li>
+                            <li>321</li>
+                            <li>321</li>
+                        </ol>
+                    </li>
+                    <li>12378910</li>
                     <li>123</li>
                     <li>123</li>
                     <li>123</li>
