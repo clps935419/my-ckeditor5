@@ -22,7 +22,8 @@ import listStyleLowerRomanIcon from '../theme/icons/liststylelowerroman.svg';
 import listStyleUpperRomanIcon from '../theme/icons/liststyleupperroman.svg';
 import listStyleLowerLatinIcon from '../theme/icons/liststylelowerlatin.svg';
 import listStyleUpperLatinIcon from '../theme/icons/liststyleupperlatin.svg';
-
+import personalBlue from '../theme/icons/personal-blue.svg';
+import personal from '../theme/icons/personal.svg';
 import '../theme/liststyles.css';
 
 /**
@@ -45,6 +46,20 @@ export default class ListStyleUI extends Plugin {
 	init() {
 		const editor = this.editor;
 		const t = editor.locale.t;
+		const defaultSetArr = [
+            {
+                label: t('chinesFormat1'),
+                tooltip: t('chinesFormat1'),
+                type: 'chinesFormat1',
+                icon: personal,
+            },
+            {
+                label: t('chinesFormat2'),
+                tooltip: t('chinesFormat2'),
+                type: 'chinesFormat2',
+                icon: personalBlue,
+            },
+        ];
 
 		editor.ui.componentFactory.add( 'bulletedList', getSplitButtonCreator( {
 			editor,
@@ -73,51 +88,14 @@ export default class ListStyleUI extends Plugin {
 				}
 			]
 		} ) );
-
+		//塞入客製化中文樣式按鈕
 		editor.ui.componentFactory.add( 'numberedList', getSplitButtonCreator( {
 			editor,
 			parentCommandName: 'numberedList',
 			buttonLabel: t( 'Numbered List' ),
 			buttonIcon: numberedListIcon,
 			toolbarAriaLabel: t( 'Numbered list styles toolbar' ),
-			styleDefinitions: [
-				{
-					label: t( 'Toggle the decimal list style' ),
-					tooltip: t( 'Decimal' ),
-					type: 'decimal',
-					icon: listStyleDecimalIcon
-				},
-				{
-					label: t( 'Toggle the decimal with leading zero list style' ),
-					tooltip: t( 'Decimal with leading zero' ),
-					type: 'decimal-leading-zero',
-					icon: listStyleDecimalWithLeadingZeroIcon
-				},
-				{
-					label: t( 'Toggle the lower–roman list style' ),
-					tooltip: t( 'Lower–roman' ),
-					type: 'lower-roman',
-					icon: listStyleLowerRomanIcon
-				},
-				{
-					label: t( 'Toggle the upper–roman list style' ),
-					tooltip: t( 'Upper-roman' ),
-					type: 'upper-roman',
-					icon: listStyleUpperRomanIcon
-				},
-				{
-					label: t( 'Toggle the lower–latin list style' ),
-					tooltip: t( 'Lower-latin' ),
-					type: 'lower-latin',
-					icon: listStyleLowerLatinIcon
-				},
-				{
-					label: t( 'Toggle the upper–latin list style' ),
-					tooltip: t( 'Upper-latin' ),
-					type: 'upper-latin',
-					icon: listStyleUpperLatinIcon
-				}
-			]
+			styleDefinitions: defaultSetArr
 		} ) );
 	}
 }

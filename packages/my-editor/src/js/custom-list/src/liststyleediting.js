@@ -220,8 +220,13 @@ function upcastListItemStyle() {
 			}
 
 			const listStyle = listParent.getStyle( 'list-style-type' ) || DEFAULT_LIST_TYPE;
+			console.log(
+                'list-st',
+                listStyle,
+                listParent.getStyle('list-style-type')
+            );
 			const listItem = data.modelRange.start.nodeAfter || data.modelRange.end.nodeBefore;
-			conversionApi.writer.setAttribute( 'listStyle', listStyle, listItem );
+			conversionApi.writer.setAttribute('listStyle', listStyle, listItem );
 		}, { priority: 'low' } );
 	};
 }
@@ -272,7 +277,8 @@ function downcastListStyleAttribute() {
 	// @param {module:engine/view/element~Element} element
 	function setListStyle( writer, listStyle, element ) {
 		if ( listStyle && listStyle !== DEFAULT_LIST_TYPE ) {
-			writer.setStyle( 'list-style-type', listStyle, element );
+			//葳橋設定:取消將設定寫在css style上
+			// writer.setStyle( 'list-style-type', listStyle, element );
 		} else {
 			writer.removeStyle( 'list-style-type', element );
 		}

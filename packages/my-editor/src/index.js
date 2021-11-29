@@ -38,10 +38,11 @@ import {
     InsertTextIcon1,
     InsertTextIcon2,
 } from './js/common-use-icon/index.js';
+
+
+
 //增加符號
-import {
-    SpecialCharactersArrowsExtended
-} from './js/special-characters/index.js';
+import { SpecialCharactersArrowsExtended } from './js/special-characters/index.js';
 //客製list-style
 import customList from './js/custom-list/src/list';
 
@@ -64,7 +65,6 @@ function ClipboardButtons(editor) {
             });
 
             view.on('execute', () => {
-                console.log('this', this, locale, action);
                 if (action === 'paste') {
                     alert('Sorry man, no can do!');
                     document.execCommand(action);
@@ -79,12 +79,11 @@ function ClipboardButtons(editor) {
 }
 class ListStartAttribute extends Plugin {
     init() {
-        console.log('ListStartAttribute is init');
         const editor = this.editor;
 
         // 1.extend schema
         editor.model.schema.extend('listItem', {
-            allowAttributes: 'data-content'
+            allowAttributes: 'data-content',
         });
 
         // 2.set conversion up/down
@@ -92,7 +91,6 @@ class ListStartAttribute extends Plugin {
             dispatcher.on(
                 'attribute:data-content',
                 (evt, data, conversionApi) => {
-                    console.log('aaaaaaaaa', data.attributeNewValue);
                     if (data.item.name != 'listItem') {
                         return;
                     }
@@ -102,33 +100,35 @@ class ListStartAttribute extends Plugin {
                         data.item
                     );
                     const containerElement = viewElement.parent;
-
+                    const listStyle = data['item']['_attrs'].get('listStyle');
+                    const indent = data['item']['_attrs'].get('listIndent');
                     if (true) {
-                        console.log(
-                            'data',
-                            viewElement,
-                            data,
-                            data.attributeKey,
-                            data.attributeNewValue
-                        );
+                        // console.log(
+                        //     'data',
+                        //     containerElement,
+                        //     viewElement,
+                        //     data,
+                        //     data.attributeKey,
+                        //     data.attributeNewValue
+                        // );
+                        // console.log(
+                        //     'data',
+                        //     data,
+                        //     data['item']['_attrs'],
+                        //     data['item']['_attrs'].get('listStyle')
+                        // );
                         viewWriter.setAttribute(
                             data.attributeKey,
                             data.attributeNewValue,
                             viewElement
                         );
-                        // viewWriter.setAttribute(
-                        //     'list-style-type',
-                        //     'none',
-                        //     containerElement
-                        // );
-                        // viewWriter.setAttribute('index', index, viewElement);
                     }
                 }
             );
         });
     }
 }
-export default class ClassicEditor extends ClassicEditorBase {};
+export default class ClassicEditor extends ClassicEditorBase {}
 
 ClassicEditor.builtinPlugins = [
     Alignment,
@@ -154,7 +154,7 @@ ClassicEditor.builtinPlugins = [
     ClipboardButtons,
 
     customList,
-    // customListStyle,
+    customListStyle,
     ListStartAttribute,
     InsertTextIcon1,
     InsertTextIcon2,
@@ -170,38 +170,37 @@ ClassicEditor.defaultConfig = {
         // isSticky: false,
         items: [
             // 'heading',
+            'undo',
+            'redo',
             '|',
             'bold',
             'italic',
             'underline',
-            'link',
+            // 'link',
             'bulletedList',
             'numberedList',
-            'alignment',
-            '|',
-            'fontColor',
-            'fontFamily',
-            'fontSize',
-            'fontBackgroundColor',
-            '|',
-            'blockQuote',
-            'undo',
-            'redo',
-            '|',
-            'specialCharacters',
-            '|',
-            'copy',
-            'cut',
-            'paste',
-            'test',
-            'test2',
-            'test3',
-            '|',
-            'InsertTextIcon1',
-            'InsertTextIcon2',
+            // 'alignment',
             '|',
             'outdent',
             'indent',
+            // 'fontColor',
+            // 'fontFamily',
+            // 'fontSize',
+            // 'fontBackgroundColor',
+            '|',
+            // 'blockQuote',
+
+            '|',
+            'specialCharacters',
+            // '|',
+            // 'copy',
+            // 'cut',
+            // 'paste',
+            '|',
+            'InsertTextIcon1',
+            'InsertTextIcon2',
+            'ck-dialog',
+            '|',
         ],
     },
     indentBlock: {
@@ -213,6 +212,11 @@ ClassicEditor.defaultConfig = {
     },
     fontSize: {
         options: [12, 14, '預設', 16, 18, 20, 22, 24, 26, 28, 30],
-    },
+    }, // if(indent === 0){
+    //     viewWriter.setAttribute(
+    //         'listStyle',
+    //         listStyle,
+    //         containerElement
+    //     );
+    // }
 };
-

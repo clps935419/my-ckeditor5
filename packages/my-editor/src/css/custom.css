@@ -21,3 +21,19 @@ ol > li:before{
 .custom-block-indent-c {
     margin-left: 30%;
 }
+p{
+    margin-block-start: 0%;
+    margin-block-end: 0%;
+}
+.ck-content > ol{
+    padding-inline-start: 0px;
+}
+.ck-content > ul{
+    padding-inline-start: 15px;
+}
+ol{
+    padding-inline-start:1em;
+}
+ul{
+    padding-inline-start:1em;
+}

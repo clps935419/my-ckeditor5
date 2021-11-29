@@ -8,7 +8,7 @@
  */
 
 import { TreeWalker } from 'ckeditor5/src/engine';
-
+import { chinesFormatObj } from './chinesFormatData';
 import {
     generateLiInUl,
     injectViewList,
@@ -632,13 +632,20 @@ export function viewToModelPosition(model) {
 export function modelChangePostFixer(model, writer) {
     const changes = model.document.differ.getChanges();
     const itemToListHead = new Map();
+    console.log('進去', changes);
 
     let applied = false;
 
     for (const entry of changes) {
+    console.log('進去---', entry);
+
         if (entry.type == 'insert' && entry.name == 'listItem') {
+    console.log('進去1', changes);
+
             _addListToFix(entry.position);
         } else if (entry.type == 'insert' && entry.name != 'listItem') {
+    console.log('進去2', changes);
+
             if (entry.name != '$text') {
                 // In case of renamed element.
                 const item = entry.position.nodeAfter;
@@ -672,16 +679,27 @@ export function modelChangePostFixer(model, writer) {
 
             _addListToFix(posAfter);
         } else if (entry.type == 'remove' && entry.name == 'listItem') {
+    console.log('進去3', changes);
+
             _addListToFix(entry.position);
         } else if (
             entry.type == 'attribute' &&
             entry.attributeKey == 'listIndent'
         ) {
+    console.log('進去4', changes);
+
             _addListToFix(entry.range.start);
         } else if (
             entry.type == 'attribute' &&
             entry.attributeKey == 'listType'
         ) {
+    console.log('進去5', changes);
+
+            console.log('進去2')
+            _addListToFix(entry.range.start);
+        }else if (entry.type == 'attribute' && entry.attributeKey == 'listStyle') {
+    console.log('進去6', changes);
+
             _addListToFix(entry.range.start);
         }
     }
@@ -760,41 +778,32 @@ export function modelChangePostFixer(model, writer) {
         }
     }
 	function _customAddNumLi(item) {
-        // writer.setAttribute(
-        //     'listType',
-        //     'none',
-        //     item
-        // );
-        const cn = [
-            '\u4E00',
-            '\u4E8C',
-            '\u4E09',
-            '\u56DB',
-            '\u4E94',
-            '\u516D',
-            '\u4E03',
-            '\u516B',
-            '\u4E5D',
-            '\u5341',
-            '',
-        ];
+        console.log('進去')
         let count = 0;
         let dataContainerArr = [];
         let prevIndent = -1;
-        while (item && item.is('element', 'listItem')) {
+        let chinesArr;
+        //確認是否為數字項次符號
+        while (
+            item &&
+            item.is('element', 'listItem') &&
+            item.getAttribute('listType') === 'numbered'
+        ) {
             console.warn(
                 '--*----------------',
                 item,
-                item.getAttribute('listType')
+                item.getAttribute('listStyle')
             );
+
             if (item.getAttribute('listType') !== 'numbered') {
                 item = item.nextSibling;
                 continue;
             }
             const currIndent = item.getAttribute('listIndent');
             const tmpObj = {
-                indent: currIndent,
+                indent: currIndent,//目前階層
                 index: '',
+                listStyle: item.getAttribute('listStyle'),//目前的中文樣式
             };
             if (prevIndent === currIndent) {
                 //同一階層就持續+1
@@ -807,128 +816,81 @@ export function modelChangePostFixer(model, writer) {
                 const filterArr = dataContainerArr.filter((item) => {
                     return item.indent === currIndent;
                 });
-                console.log(
-                    'waa',
-                    filterArr,
-                    filterArr[filterArr.length - 1].indent
-                );
 
                 count = filterArr[filterArr.length - 1].index + 1;
             }
             tmpObj.index = count;
 
+            // if (dataContainerArr.length > 0) {
+            //     const firstObj = dataContainerArr.filter((item, index) => {
+            //         return index === 0;
+            //     });
+
+            //     tmpObj.listStyle = firstObj[0].listStyle;
+            //     // console.log(
+            //     //     '********************',
+            //     //     firstObj[0],
+            //     //     firstObj[0].listStyle,
+            //     //     dataContainerArr,
+            //     //     tmpObj
+            //     // );
+            // }
+            // if (tmpObj.indent === 0) {
+            //     // console.log(
+            //     //     '********************',
+            //     //     item.getAttribute('listStyle')
+            //     // );
+            //     chinesArr =
+            //         chinesFormatObj[
+            //             item.getAttribute('listStyle') || 'default'
+            //         ];
+            // }
             //轉中文
 
             writer.setAttribute(
                 'data-content',
-                changChines(tmpObj.indent, tmpObj.index),
+                changChines(tmpObj, chinesFormatObj),
                 item
             );
+
+            // writer.setAttribute('listStyle', tmpObj.listStyle, item);
+
             prevIndent = currIndent;
             item = item.nextSibling;
             dataContainerArr.push(tmpObj);
-            function changChines(indent, count) {
-                const chinesArr = [];
+
+
+            function changChines(obj, chinesFormatObj) {
+                const indent = obj.indent;
+                const count = obj.index;
+                const formatStyle = obj.listStyle || 'default';
                 let num = count + 1; //陣列從0開始因此+1
-                chinesArr[0] = [
-                    '\u4E00',
-                    '\u4E8C',
-                    '\u4E09',
-                    '\u56DB',
-                    '\u4E94',
-                    '\u516D',
-                    '\u4E03',
-                    '\u516B',
-                    '\u4E5D',
-                    '\u5341',
-                    '',
-                ];
-                chinesArr[1] = [
-                    '\u7532',
-                    '\u4E59',
-                    '\u4E19',
-                    '\u4E01',
-                    '\u620A',
-                    '\u5DF1',
-                    '\u5E9A',
-                    '\u8F9B',
-                    '\u58EC',
-                    '\u7678',
-                    '',
-                ];
-                chinesArr[2] = [
-                    '\u5b50',
-                    '\u4e11',
-                    '\u5bc5',
-                    '\u536f',
-                    '\u8fb0',
-                    '\u5df3',
-                    '\u5348',
-                    '\u672a',
-                    '\u7533',
-                    '\u9149',
-                    '\u620c',
-                    '\u4ea5',
-                ];
-                chinesArr[3] = [
-                    '\uff11',
-                    '\uff12',
-                    '\uff13',
-                    '\uff14',
-                    '\uff15',
-                    '\uff16',
-                    '\uff17',
-                    '\uff18',
-                    '\uff19',
-                    '\uff11',
-                    '',
-                ];
-                chinesArr[4] = [
-                    '\uff11',
-                    '\uff12',
-                    '\uff13',
-                    '\uff14',
-                    '\uff15',
-                    '\uff16',
-                    '\uff17',
-                    '\uff18',
-                    '\uff19',
-                    '',
-                    '',
-                ];
-                let targetArr = chinesArr[indent];
-				console.log('--',targetArr,indent);
-				if(targetArr === undefined){
-					targetArr = chinesArr[0];
-				}
+                let targetArr = chinesFormatObj[formatStyle];
+                console.log('obj---', obj, chinesFormatObj, targetArr);
+
                 if (num < 11) {
                     //這邊是到10
-                    console.log('firstNum--', num, targetArr[num - 1]);
                     return targetArr[num - 1];
                 } else if (num < 20) {
                     //10-19 EX十一
-                    const firstText = chinesArr[0][9]; //十
+                    const firstText = targetArr[9]; //十
                     const secNum = getDigit(num, 2, true) - 1;
                     const secText = targetArr[secNum];
-                    console.log('firstNum', secNum);
                     return `${firstText}${secText}`;
                 } else if (num % 10 === 0) {
                     //EX二十
                     const firstNum = getDigit(num, 1, true) - 1;
                     const firstText = targetArr[firstNum];
-                    const secText = chinesArr[0][9]; //十
-                    console.log('/*/*/*', firstNum);
+                    const secText = targetArr[9]; //十
 
                     return `${firstText}${secText}`;
                 } else {
                     //21以上 EX二十一
                     const firstNum = getDigit(num, 1, true) - 1;
                     const firstText = targetArr[firstNum];
-                    const secText = chinesArr[0][9]; //十
+                    const secText = targetArr[9]; //十
                     const thirdNum = getDigit(num, 2, true) - 1;
                     const thirdText = targetArr[thirdNum];
-
-                    console.log('****', firstNum, thirdNum);
 
                     return `${firstText}${secText}${thirdText}`;
                 }
