@@ -220,11 +220,6 @@ function upcastListItemStyle() {
 			}
 
 			const listStyle = listParent.getStyle( 'list-style-type' ) || DEFAULT_LIST_TYPE;
-			console.log(
-                'list-st',
-                listStyle,
-                listParent.getStyle('list-style-type')
-            );
 			const listItem = data.modelRange.start.nodeAfter || data.modelRange.end.nodeBefore;
 			conversionApi.writer.setAttribute('listStyle', listStyle, listItem );
 		}, { priority: 'low' } );

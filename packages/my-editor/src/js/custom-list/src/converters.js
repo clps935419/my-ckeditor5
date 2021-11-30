@@ -632,19 +632,15 @@ export function viewToModelPosition(model) {
 export function modelChangePostFixer(model, writer) {
     const changes = model.document.differ.getChanges();
     const itemToListHead = new Map();
-    console.log('進去', changes);
 
     let applied = false;
 
     for (const entry of changes) {
-    console.log('進去---', entry);
 
         if (entry.type == 'insert' && entry.name == 'listItem') {
-    console.log('進去1', changes);
 
             _addListToFix(entry.position);
         } else if (entry.type == 'insert' && entry.name != 'listItem') {
-    console.log('進去2', changes);
 
             if (entry.name != '$text') {
                 // In case of renamed element.
@@ -679,27 +675,21 @@ export function modelChangePostFixer(model, writer) {
 
             _addListToFix(posAfter);
         } else if (entry.type == 'remove' && entry.name == 'listItem') {
-    console.log('進去3', changes);
 
             _addListToFix(entry.position);
         } else if (
             entry.type == 'attribute' &&
             entry.attributeKey == 'listIndent'
         ) {
-    console.log('進去4', changes);
 
             _addListToFix(entry.range.start);
         } else if (
             entry.type == 'attribute' &&
             entry.attributeKey == 'listType'
         ) {
-    console.log('進去5', changes);
-
-            console.log('進去2')
             _addListToFix(entry.range.start);
         }else if (entry.type == 'attribute' && entry.attributeKey == 'listStyle') {
-    console.log('進去6', changes);
-
+            //設定中文樣式變動也會觸發轉換器
             _addListToFix(entry.range.start);
         }
     }
@@ -707,6 +697,7 @@ export function modelChangePostFixer(model, writer) {
     for (const listHead of itemToListHead.values()) {
         _fixListIndents(listHead);
         _fixListTypes(listHead);
+        //葳橋:中文項次符號處理
 		_customAddNumLi(listHead);
     }
 
@@ -778,41 +769,38 @@ export function modelChangePostFixer(model, writer) {
         }
     }
 	function _customAddNumLi(item) {
-        console.log('進去')
-        let count = 0;
-        let dataContainerArr = [];
-        let prevIndent = -1;
-        let chinesArr;
+        let count = 0;//數字排序計數器
+        let dataContainerArr = [];//排序紀錄儲存的地方
+        let prevIndent = -1;//階層的計數器
         //確認是否為數字項次符號
         while (
             item &&
-            item.is('element', 'listItem') &&
-            item.getAttribute('listType') === 'numbered'
+            item.is('element', 'listItem') 
         ) {
             console.warn(
-                '--*----------------',
+                '--中文項次處理---',
                 item,
                 item.getAttribute('listStyle')
             );
-
+            //如果遇到不是數字項次符號就跳過不處理
             if (item.getAttribute('listType') !== 'numbered') {
                 item = item.nextSibling;
                 continue;
             }
-            const currIndent = item.getAttribute('listIndent');
+            const currIndent = item.getAttribute('listIndent');//取得目前所在階層
             const tmpObj = {
                 indent: currIndent,//目前階層
-                index: '',
+                index: '',//目前數字的排序
                 listStyle: item.getAttribute('listStyle'),//目前的中文樣式
             };
             if (prevIndent === currIndent) {
-                //同一階層就持續+1
+                //同一階層排序就+1
                 count += 1;
             } else if (currIndent > prevIndent) {
-                //晉級道下一階層
+                //晉級道下一階層排序就歸0
                 count = 0;
             } else {
-                //EX如果是第四階回到第一皆
+                //EX如果是第四階回到第一階，就找出上次第一階的排序資料
                 const filterArr = dataContainerArr.filter((item) => {
                     return item.indent === currIndent;
                 });
@@ -820,56 +808,31 @@ export function modelChangePostFixer(model, writer) {
                 count = filterArr[filterArr.length - 1].index + 1;
             }
             tmpObj.index = count;
-
-            // if (dataContainerArr.length > 0) {
-            //     const firstObj = dataContainerArr.filter((item, index) => {
-            //         return index === 0;
-            //     });
-
-            //     tmpObj.listStyle = firstObj[0].listStyle;
-            //     // console.log(
-            //     //     '********************',
-            //     //     firstObj[0],
-            //     //     firstObj[0].listStyle,
-            //     //     dataContainerArr,
-            //     //     tmpObj
-            //     // );
-            // }
-            // if (tmpObj.indent === 0) {
-            //     // console.log(
-            //     //     '********************',
-            //     //     item.getAttribute('listStyle')
-            //     // );
-            //     chinesArr =
-            //         chinesFormatObj[
-            //             item.getAttribute('listStyle') || 'default'
-            //         ];
-            // }
-            //轉中文
-
+            
+            //轉中文並設定HTML上
             writer.setAttribute(
                 'data-content',
                 changChines(tmpObj, chinesFormatObj),
                 item
             );
 
-            // writer.setAttribute('listStyle', tmpObj.listStyle, item);
-
+            //處理完把目前的資料記錄進去
             prevIndent = currIndent;
             item = item.nextSibling;
             dataContainerArr.push(tmpObj);
 
-
+            //轉中文處理 
+            //obj為當下的元素資料
+            //chinesFormat為中文格式物件   
             function changChines(obj, chinesFormatObj) {
-                const indent = obj.indent;
-                const count = obj.index;
-                const formatStyle = obj.listStyle || 'default';
-                let num = count + 1; //陣列從0開始因此+1
-                let targetArr = chinesFormatObj[formatStyle];
+                const count = obj.index;//目前元素顯示的數字
+                const formatStyle = obj.listStyle || 'default';//目前元素屬於何種中文樣式
+                let num = count + 1; //陣列從0開始因此+1從1開始
+                let targetArr = chinesFormatObj[formatStyle];//準備轉換的中文陣列
                 console.log('obj---', obj, chinesFormatObj, targetArr);
 
                 if (num < 11) {
-                    //這邊是到10
+                    //這邊是1到10
                     return targetArr[num - 1];
                 } else if (num < 20) {
                     //10-19 EX十一
@@ -878,7 +841,7 @@ export function modelChangePostFixer(model, writer) {
                     const secText = targetArr[secNum];
                     return `${firstText}${secText}`;
                 } else if (num % 10 === 0) {
-                    //EX二十
+                    //EX二十、三十、四十
                     const firstNum = getDigit(num, 1, true) - 1;
                     const firstText = targetArr[firstNum];
                     const secText = targetArr[9]; //十
@@ -894,7 +857,10 @@ export function modelChangePostFixer(model, writer) {
 
                     return `${firstText}${secText}${thirdText}`;
                 }
-
+                //抓出數字中的第幾個字
+                //number為帶入的數字
+                //n為要抓出的第幾位數
+                //是否從左邊開始
                 function getDigit(number, n, fromLeft) {
                     const location = fromLeft
                         ? getDigitCount(number) + 1 - n

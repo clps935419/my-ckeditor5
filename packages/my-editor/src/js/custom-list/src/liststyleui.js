@@ -46,16 +46,23 @@ export default class ListStyleUI extends Plugin {
 	init() {
 		const editor = this.editor;
 		const t = editor.locale.t;
+		//葳橋設定中文格式按鈕:
 		const defaultSetArr = [
             {
-                label: t('chinesFormat1'),
-                tooltip: t('chinesFormat1'),
+                label: t('預設'),
+                tooltip: t('預設'),
+                type: 'default',
+                icon: personal,
+            },
+            {
+                label: t('一'),
+                tooltip: t('一、二、三'),
                 type: 'chinesFormat1',
                 icon: personal,
             },
             {
-                label: t('chinesFormat2'),
-                tooltip: t('chinesFormat2'),
+                label: t('甲'),
+                tooltip: t('甲、乙、丙'),
                 type: 'chinesFormat2',
                 icon: personalBlue,
             },
@@ -88,7 +95,7 @@ export default class ListStyleUI extends Plugin {
 				}
 			]
 		} ) );
-		//塞入客製化中文樣式按鈕
+		//葳橋:塞入客製化中文樣式按鈕
 		editor.ui.componentFactory.add( 'numberedList', getSplitButtonCreator( {
 			editor,
 			parentCommandName: 'numberedList',
