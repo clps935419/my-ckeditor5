@@ -49,21 +49,33 @@ export default class ListStyleUI extends Plugin {
 		//葳橋設定中文格式按鈕:
 		const defaultSetArr = [
             {
-                label: t('預設'),
-                tooltip: t('預設'),
-                type: 'default',
+                label: t('一'),
+                tooltip: t('(一)'),
+                type: 'format1-0', //表示attr陣列中的第0個
                 icon: personal,
             },
             {
                 label: t('一'),
-                tooltip: t('一、二、三'),
-                type: 'chinesFormat1',
+                tooltip: t('一、'),
+                type: 'format1-1', //表示attr陣列中的第1個
                 icon: personal,
             },
             {
-                label: t('甲'),
-                tooltip: t('甲、乙、丙'),
-                type: 'chinesFormat2',
+                label: t('(1)'),
+                tooltip: t('(1)'),
+                type: 'format2-0',
+                icon: personalBlue,
+            },
+            {
+                label: t('(1).'),
+                tooltip: t('(1).'),
+                type: 'format2-1',
+                icon: personalBlue,
+            },
+            {
+                label: t('A.'),
+                tooltip: t('B.'),
+                type: 'format4-0',
                 icon: personalBlue,
             },
         ];
@@ -175,7 +187,7 @@ function getStyleButtonCreator( { editor, listStyleCommand, parentCommandName } 
 	return ( { label, type, icon, tooltip } ) => {
 		const button = new ButtonView( locale );
 
-		button.set( { label, icon, tooltip } );
+		button.set({ label, icon, tooltip });
 
 		listStyleCommand.on( 'change:value', () => {
 			button.isOn = listStyleCommand.value === type;

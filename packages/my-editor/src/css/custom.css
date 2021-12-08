@@ -28,6 +28,9 @@ p{
 .ck-content > ol{
     padding-inline-start: 0px;
 }
+.ck-content > ol ul{
+    list-style-position: inside;
+}
 .ck-content > ul{
     padding-inline-start: 15px;
 }

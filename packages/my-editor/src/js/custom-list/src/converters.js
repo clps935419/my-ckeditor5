@@ -7,8 +7,12 @@
  * @module list/converters
  */
 
-import { TreeWalker } from 'ckeditor5/src/engine';
-import { chinesFormatObj } from './chinesFormatData';
+import {
+    TreeWalker
+} from 'ckeditor5/src/engine';
+import {
+    chinesFormatObj
+} from './chinesFormatData';
 import {
     generateLiInUl,
     injectViewList,
@@ -402,7 +406,9 @@ export function modelViewMergeAfter(evt, data, conversionApi) {
  * @param {module:engine/conversion/upcastdispatcher~UpcastConversionApi} conversionApi Conversion interface to be used by the callback.
  */
 export function viewModelConverter(evt, data, conversionApi) {
-    if (conversionApi.consumable.consume(data.viewItem, { name: true })) {
+    if (conversionApi.consumable.consume(data.viewItem, {
+            name: true
+        })) {
         const writer = conversionApi.writer;
 
         // 1. Create `listItem` model element.
@@ -415,9 +421,9 @@ export function viewModelConverter(evt, data, conversionApi) {
 
         // Set 'bulleted' as default. If this item is pasted into a context,
         const type =
-            data.viewItem.parent && data.viewItem.parent.name == 'ol'
-                ? 'numbered'
-                : 'bulleted';
+            data.viewItem.parent && data.viewItem.parent.name == 'ol' ?
+            'numbered' :
+            'bulleted';
         writer.setAttribute('listType', type, listItem);
 
         if (!conversionApi.safeInsert(listItem, data.modelCursor)) {
@@ -448,7 +454,9 @@ export function viewModelConverter(evt, data, conversionApi) {
  * @param {module:engine/conversion/upcastdispatcher~UpcastConversionApi} conversionApi Conversion interface to be used by the callback.
  */
 export function cleanList(evt, data, conversionApi) {
-    if (conversionApi.consumable.test(data.viewItem, { name: true })) {
+    if (conversionApi.consumable.test(data.viewItem, {
+            name: true
+        })) {
         // Caching children because when we start removing them iterating fails.
         const children = Array.from(data.viewItem.getChildren());
 
@@ -473,7 +481,9 @@ export function cleanList(evt, data, conversionApi) {
  * @param {module:engine/conversion/upcastdispatcher~UpcastConversionApi} conversionApi Conversion interface to be used by the callback.
  */
 export function cleanListItem(evt, data, conversionApi) {
-    if (conversionApi.consumable.test(data.viewItem, { name: true })) {
+    if (conversionApi.consumable.test(data.viewItem, {
+            name: true
+        })) {
         if (data.viewItem.childCount === 0) {
             return;
         }
@@ -665,8 +675,8 @@ export function modelChangePostFixer(model, writer) {
                 }
 
                 for (const innerItem of Array.from(
-                    model.createRangeIn(item)
-                ).filter((e) => e.item.is('element', 'listItem'))) {
+                        model.createRangeIn(item)
+                    ).filter((e) => e.item.is('element', 'listItem'))) {
                     _addListToFix(innerItem.previousPosition);
                 }
             }
@@ -688,7 +698,7 @@ export function modelChangePostFixer(model, writer) {
             entry.attributeKey == 'listType'
         ) {
             _addListToFix(entry.range.start);
-        }else if (entry.type == 'attribute' && entry.attributeKey == 'listStyle') {
+        } else if (entry.type == 'attribute' && entry.attributeKey == 'listStyle') {
             //設定中文樣式變動也會觸發轉換器
             _addListToFix(entry.range.start);
         }
@@ -698,7 +708,7 @@ export function modelChangePostFixer(model, writer) {
         _fixListIndents(listHead);
         _fixListTypes(listHead);
         //葳橋:中文項次符號處理
-		_customAddNumLi(listHead);
+        _customAddNumLi(listHead);
     }
 
     return applied;
@@ -721,9 +731,7 @@ export function modelChangePostFixer(model, writer) {
 
             for (
                 // Cache previousSibling and reuse for performance reasons. See #6581.
-                let previousSibling = listHead.previousSibling;
-                previousSibling && previousSibling.is('element', 'listItem');
-                previousSibling = listHead.previousSibling
+                let previousSibling = listHead.previousSibling; previousSibling && previousSibling.is('element', 'listItem'); previousSibling = listHead.previousSibling
             ) {
                 listHead = previousSibling;
 
@@ -768,14 +776,15 @@ export function modelChangePostFixer(model, writer) {
             item = item.nextSibling;
         }
     }
-	function _customAddNumLi(item) {
-        let count = 0;//數字排序計數器
-        let dataContainerArr = [];//排序紀錄儲存的地方
-        let prevIndent = -1;//階層的計數器
+
+    function _customAddNumLi(item) {
+        let count = 0; //數字排序計數器
+        let dataContainerArr = []; //排序紀錄儲存的地方
+        let prevIndent = -1; //階層的計數器
         //確認是否為數字項次符號
         while (
             item &&
-            item.is('element', 'listItem') 
+            item.is('element', 'listItem')
         ) {
             console.warn(
                 '--中文項次處理---',
@@ -787,11 +796,11 @@ export function modelChangePostFixer(model, writer) {
                 item = item.nextSibling;
                 continue;
             }
-            const currIndent = item.getAttribute('listIndent');//取得目前所在階層
+            const currIndent = item.getAttribute('listIndent'); //取得目前所在階層
             const tmpObj = {
-                indent: currIndent,//目前階層
-                index: '',//目前數字的排序
-                listStyle: item.getAttribute('listStyle'),//目前的中文樣式
+                indent: currIndent, //目前階層
+                index: '', //目前數字的排序
+                listStyle: item.getAttribute('listStyle'), //目前的中文樣式
             };
             if (prevIndent === currIndent) {
                 //同一階層排序就+1
@@ -808,7 +817,7 @@ export function modelChangePostFixer(model, writer) {
                 count = filterArr[filterArr.length - 1].index + 1;
             }
             tmpObj.index = count;
-            
+
             //轉中文並設定HTML上
             writer.setAttribute(
                 'data-content',
@@ -825,50 +834,110 @@ export function modelChangePostFixer(model, writer) {
             //obj為當下的元素資料
             //chinesFormat為中文格式物件   
             function changChines(obj, chinesFormatObj) {
-                const count = obj.index;//目前元素顯示的數字
-                const formatStyle = obj.listStyle || 'default';//目前元素屬於何種中文樣式
+                const count = obj.index; //目前元素顯示的數字
+                const formatStyle = obj.listStyle || 'format1-0'; //目前元素屬於何種中文樣式，預設為format1-0
+                const targetFormatStyle = formatStyle.substring(
+                    0,
+                    formatStyle.indexOf('-')
+                );
+                const attrPosition = formatStyle.substring(
+                    formatStyle.length - 1
+                ); //抓最後一個字代表樣式陣列的位址
                 let num = count + 1; //陣列從0開始因此+1從1開始
-                let targetArr = chinesFormatObj[formatStyle];//準備轉換的中文陣列
+                const targetArr = chinesFormatObj[targetFormatStyle].data; //準備轉換的中文陣列
+                const attrArr = chinesFormatObj[targetFormatStyle].attr; //樣式陣列
+                const targetAttr = attrArr[attrPosition]; //目標樣式
+                let output = '';
                 console.log('obj---', obj, chinesFormatObj, targetArr);
+                switch (targetFormatStyle) {
+                    case 'format1':
+                        output = unlimitedChinesCalc(num, targetArr);
+                        break;
+                    case 'format2':
+                        output = unlimitedNumCalc(num, 'big');
+                        break;
+                    case 'format3':
+                        output = unlimitedNumCalc(num, 'small');
+                        break;
+                    case 'format4':
+                        output = abcdLimitedCalc(num, targetArr);
+                        break;
+                    default:
+                        break;
+                }
 
-                if (num < 11) {
-                    //這邊是1到10
-                    return targetArr[num - 1];
-                } else if (num < 20) {
-                    //10-19 EX十一
-                    const firstText = targetArr[9]; //十
-                    const secNum = getDigit(num, 2, true) - 1;
-                    const secText = targetArr[secNum];
-                    return `${firstText}${secText}`;
-                } else if (num % 10 === 0) {
-                    //EX二十、三十、四十
-                    const firstNum = getDigit(num, 1, true) - 1;
-                    const firstText = targetArr[firstNum];
-                    const secText = targetArr[9]; //十
+                return output === '' ? '' : targetAttr.replace(/T/, output);
 
-                    return `${firstText}${secText}`;
-                } else {
-                    //21以上 EX二十一
-                    const firstNum = getDigit(num, 1, true) - 1;
-                    const firstText = targetArr[firstNum];
-                    const secText = targetArr[9]; //十
-                    const thirdNum = getDigit(num, 2, true) - 1;
-                    const thirdText = targetArr[thirdNum];
+                //如果是中文無限的情況
+                function unlimitedChinesCalc(num, targetArr) {
+                    if (num < 11) {
+                        //這邊是1到10
+                        return targetArr[num - 1];
+                    } else if (num < 20) {
+                        //10-19 EX十一
+                        const firstText = targetArr[9]; //十
+                        const secNum = getDigit(num, 2, true) - 1;
+                        const secText = targetArr[secNum];
+                        return `${firstText}${secText}`;
+                    } else if (num % 10 === 0) {
+                        //EX二十、三十、四十
+                        const firstNum = getDigit(num, 1, true) - 1;
+                        const firstText = targetArr[firstNum];
+                        const secText = targetArr[9]; //十
+                        return `${firstText}${secText}`;
+                    } else {
+                        //21以上 EX二十一
+                        const firstNum = getDigit(num, 1, true) - 1;
+                        const firstText = targetArr[firstNum];
+                        const secText = targetArr[9]; //十
+                        const thirdNum = getDigit(num, 2, true) - 1;
+                        const thirdText = targetArr[thirdNum];
+                        return `${firstText}${secText}${thirdText}`;
+                    }
+                }
+                //如果是數字無限的情況
+                function unlimitedNumCalc(num, type) {
+                    
+                    return type === 'big' ?
+                        toDBC(num) :
+                        num;
+                    //轉全形   
+                    function toDBC(txtString) {
+                        txtString = txtString + '';
 
-                    return `${firstText}${secText}${thirdText}`;
+                        var tmp = '';
+                        for (var i = 0; i < txtString.length; i++) {
+                            if (txtString.charCodeAt(i) == 32) {
+                                tmp = tmp + String.fromCharCode(12288);
+                            }
+                            if (txtString.charCodeAt(i) < 127) {
+                                tmp =
+                                    tmp +
+                                    String.fromCharCode(
+                                        txtString.charCodeAt(i) + 65248
+                                    );
+                            }
+                        }
+                        return tmp;
+                    }
+                }
+                //abcd有限的情況
+                function abcdLimitedCalc(num, targetArr) {
+                    return targetArr[num - 1] === undefined ? '' : targetArr[num - 1];
                 }
                 //抓出數字中的第幾個字
                 //number為帶入的數字
                 //n為要抓出的第幾位數
                 //是否從左邊開始
                 function getDigit(number, n, fromLeft) {
-                    const location = fromLeft
-                        ? getDigitCount(number) + 1 - n
-                        : n;
+                    const location = fromLeft ?
+                        getDigitCount(number) + 1 - n :
+                        n;
                     return Math.floor(
                         (number / Math.pow(10, location - 1)) % 10
                     );
                 }
+
                 function getDigitCount(number) {
                     return (
                         Math.max(Math.floor(Math.log10(Math.abs(number))), 0) +
@@ -997,7 +1066,10 @@ function viewToModelListItemChildrenConverter(
     viewChildren,
     conversionApi
 ) {
-    const { writer, schema } = conversionApi;
+    const {
+        writer,
+        schema
+    } = conversionApi;
 
     // A position after the last inserted `listItem`.
     let nextPosition = writer.createPositionAfter(listItemModel);
@@ -1073,7 +1145,9 @@ function viewToModelListItemChildrenConverter(
 
 // Helper function that seeks for a next list item starting from given `startPosition`.
 function findNextListItem(startPosition) {
-    const treeWalker = new TreeWalker({ startPosition });
+    const treeWalker = new TreeWalker({
+        startPosition
+    });
 
     let value;
 
@@ -1099,8 +1173,7 @@ function hoistNestedLists(
     // This will be the model element which will get nested items (if it has smaller indent) or sibling items (if it has same indent).
     // Keep in mind that such element might not be found, if removed item was the first item.
     const prevModelItem = getSiblingListItem(
-        modelRemoveStartPosition.nodeBefore,
-        {
+        modelRemoveStartPosition.nodeBefore, {
             sameIndent: true,
             smallerIndent: true,
             listIndent: nextIndent,
@@ -1112,9 +1185,9 @@ function hoistNestedLists(
     const viewWriter = conversionApi.writer;
 
     // Indent of found element or `null` if the element has not been found.
-    const prevIndent = prevModelItem
-        ? prevModelItem.getAttribute('listIndent')
-        : null;
+    const prevIndent = prevModelItem ?
+        prevModelItem.getAttribute('listIndent') :
+        null;
 
     let insertPosition;
 

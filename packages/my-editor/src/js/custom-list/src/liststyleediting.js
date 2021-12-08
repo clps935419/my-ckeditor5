@@ -11,8 +11,8 @@ import { Plugin } from 'ckeditor5/src/core';
 import ListEditing from './listediting';
 import ListStyleCommand from './liststylecommand';
 import { getSiblingListItem, getSiblingNodes } from './utils';
-
-const DEFAULT_LIST_TYPE = 'default';
+//葳橋預設
+const DEFAULT_LIST_TYPE = 'format1-0';
 
 /**
  * The list style engine feature.
