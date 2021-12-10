@@ -848,19 +848,28 @@ export function modelChangePostFixer(model, writer) {
                 const attrArr = chinesFormatObj[targetFormatStyle].attr; //樣式陣列
                 const targetAttr = attrArr[attrPosition]; //目標樣式
                 let output = '';
-                console.log('obj---', obj, chinesFormatObj, targetArr);
                 switch (targetFormatStyle) {
                     case 'format1':
                         output = unlimitedChinesCalc(num, targetArr);
                         break;
                     case 'format2':
-                        output = unlimitedNumCalc(num, 'big');
-                        break;
-                    case 'format3':
                         output = unlimitedNumCalc(num, 'small');
                         break;
+                    case 'format3':
+                        output = unlimitedNumCalc(num, 'big');
+                        break;
                     case 'format4':
-                        output = abcdLimitedCalc(num, targetArr);
+                        output = LimitedCalc(num, targetArr);
+                        break;
+                    case 'format5':
+                        output = unlimitedChinesCalc(num, targetArr);
+                        break;
+                    case 'format6':
+                        output = LimitedCalc(num, targetArr);
+
+                        break;
+                    case 'format7':
+                        output = LimitedCalc(num, targetArr);
                         break;
                     default:
                         break;
@@ -879,13 +888,13 @@ export function modelChangePostFixer(model, writer) {
                         const secNum = getDigit(num, 2, true) - 1;
                         const secText = targetArr[secNum];
                         return `${firstText}${secText}`;
-                    } else if (num % 10 === 0) {
+                    } else if (num % 10 === 0 && num < 100) {
                         //EX二十、三十、四十
                         const firstNum = getDigit(num, 1, true) - 1;
                         const firstText = targetArr[firstNum];
                         const secText = targetArr[9]; //十
                         return `${firstText}${secText}`;
-                    } else {
+                    } else if(num > 20 && num < 100){
                         //21以上 EX二十一
                         const firstNum = getDigit(num, 1, true) - 1;
                         const firstText = targetArr[firstNum];
@@ -893,6 +902,30 @@ export function modelChangePostFixer(model, writer) {
                         const thirdNum = getDigit(num, 2, true) - 1;
                         const thirdText = targetArr[thirdNum];
                         return `${firstText}${secText}${thirdText}`;
+                    }else if(num % 100 === 0){
+                        //一百、二百、三百
+                        const firstNum = getDigit(num, 1, true) - 1;
+                        const firstText = targetArr[firstNum];
+                        return `${firstText}百`;
+                    }else if(num > 100){
+                        //一百零一
+                        const firstNum = getDigit(num, 1, true) - 1;
+                        const firstText = targetArr[firstNum];
+                        const secNum = getDigit(num, 2, true) - 1;
+                        const sectText = targetArr[secNum];
+                        const thirdNum = getDigit(num, 3, true) - 1;
+                        const thirdText = targetArr[thirdNum];
+                        console.log('>100',num, firstNum, secNum, thirdNum);
+                        if (parseInt(secNum) === -1) {
+                            //一百零一
+                            return `${firstText}百零${thirdText}`;
+                        } else if (thirdNum === -1) {
+                            //一百一十
+                            return `${firstText}百${sectText}十`;
+                        } else {
+                            //一百一十一
+                            return `${firstText}百${sectText}十${thirdText}`;
+                        }
                     }
                 }
                 //如果是數字無限的情況
@@ -922,7 +955,7 @@ export function modelChangePostFixer(model, writer) {
                     }
                 }
                 //abcd有限的情況
-                function abcdLimitedCalc(num, targetArr) {
+                function LimitedCalc(num, targetArr) {
                     return targetArr[num - 1] === undefined ? '' : targetArr[num - 1];
                 }
                 //抓出數字中的第幾個字

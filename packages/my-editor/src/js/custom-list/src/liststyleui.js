@@ -26,6 +26,8 @@ import personalBlue from '../theme/icons/personal-blue.svg';
 import personal from '../theme/icons/personal.svg';
 import '../theme/liststyles.css';
 
+import { chinesFormatObj } from './chinesFormatData.js';
+
 /**
  * The list style UI plugin. It introduces the extended `'bulletedList'` and `'numberedList'` toolbar
  * buttons that allow users to change styles of individual lists in the content.
@@ -46,39 +48,8 @@ export default class ListStyleUI extends Plugin {
 	init() {
 		const editor = this.editor;
 		const t = editor.locale.t;
-		//葳橋設定中文格式按鈕:
-		const defaultSetArr = [
-            {
-                label: t('一'),
-                tooltip: t('(一)'),
-                type: 'format1-0', //表示attr陣列中的第0個
-                icon: personal,
-            },
-            {
-                label: t('一'),
-                tooltip: t('一、'),
-                type: 'format1-1', //表示attr陣列中的第1個
-                icon: personal,
-            },
-            {
-                label: t('(1)'),
-                tooltip: t('(1)'),
-                type: 'format2-0',
-                icon: personalBlue,
-            },
-            {
-                label: t('(1).'),
-                tooltip: t('(1).'),
-                type: 'format2-1',
-                icon: personalBlue,
-            },
-            {
-                label: t('A.'),
-                tooltip: t('B.'),
-                type: 'format4-0',
-                icon: personalBlue,
-            },
-        ];
+		console.log('qqqqq', createMyDropdownData(chinesFormatObj, t));
+		
 
 		editor.ui.componentFactory.add( 'bulletedList', getSplitButtonCreator( {
 			editor,
@@ -108,17 +79,37 @@ export default class ListStyleUI extends Plugin {
 			]
 		} ) );
 		//葳橋:塞入客製化中文樣式按鈕
-		editor.ui.componentFactory.add( 'numberedList', getSplitButtonCreator( {
-			editor,
-			parentCommandName: 'numberedList',
-			buttonLabel: t( 'Numbered List' ),
-			buttonIcon: numberedListIcon,
-			toolbarAriaLabel: t( 'Numbered list styles toolbar' ),
-			styleDefinitions: defaultSetArr
-		} ) );
+		editor.ui.componentFactory.add(
+            'numberedList',
+            getSplitButtonCreator({
+                editor,
+                parentCommandName: 'numberedList',
+                buttonLabel: t('Numbered List'),
+                buttonIcon: numberedListIcon,
+                toolbarAriaLabel: t('Numbered list styles toolbar'),
+                styleDefinitions: createMyDropdownData(chinesFormatObj, t),
+            })
+        );
 	}
 }
+function createMyDropdownData(chinesFormatObj, t) {
+    const tmpArr = [];
+    for (let key of Object.keys(chinesFormatObj)) {
+        const tmpFormatArr = chinesFormatObj[key].attr.map((item, index) => {
+            const tmpObj = {
+                label: t(chinesFormatObj[key].data[0]),
+                tooltip: t(item.replace(/T/, chinesFormatObj[key].data[0])),
+                type: `${key}-${index}`, //表示attr陣列中的第0個
+                icon: personal,
+            };
+            return tmpObj;
+        });
+        console.log('****', tmpFormatArr);
 
+        tmpArr.push(...tmpFormatArr);
+    }
+	return tmpArr;
+}
 // A helper that returns a function that creates a split button with a toolbar in the dropdown,
 // which in turn contains buttons allowing users to change list styles in the context of the current selection.
 //

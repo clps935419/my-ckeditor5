@@ -1,5 +1,5 @@
 //葳橋中文格式:
-const chinesFormatObj = {
+let chinesFormatObj = {
     format1: {
         data: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'],
         attr: ['(T)', 'T、'], //T代表上面的字這邊就是顯示兩種(一) 一、
@@ -67,6 +67,11 @@ const chinesFormatObj = {
         attr: ['(T)'],
     },
 };
-export {
-    chinesFormatObj
-}
+export function renewFormat(editor) {
+    console.log('測試', editor.config, editor.config._config.renewFormat);
+    chinesFormatObj =
+        editor.config._config.renewFormat === undefined
+            ? chinesFormatObj
+            : editor.config._config.renewFormat;
+}  
+export { chinesFormatObj };

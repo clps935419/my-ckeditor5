@@ -23,12 +23,17 @@ import SpecialCharactersText from '@ckeditor/ckeditor5-special-characters/src/sp
 import ButtonView from '@ckeditor/ckeditor5-ui/src/button/buttonview';
 import Indent from '@ckeditor/ckeditor5-indent/src/indent.js';
 import IndentBlock from '@ckeditor/ckeditor5-indent/src/indentblock.js';
+//word貼上插件
+import PasteFromOffice from '@ckeditor/ckeditor5-paste-from-office/src/pastefromoffice';
+
 // import List from '@ckeditor/ckeditor5-list/src/list';
 // import ListStyle from '@ckeditor/ckeditor5-list/src/liststyle.js';
 
 import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
 
 import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
+
+
 
 //客製樣式
 import './css/custom.css';
@@ -48,11 +53,14 @@ import customList from './js/custom-list/src/list';
 
 import customListStyle from './js/custom-list/src/ListStyle';
 
+import { renewFormat } from './js/custom-list/src/chinesFormatData.js';
+
+
+
 function ClipboardButtons(editor) {
     addButton('copy', 'Copy');
     addButton('cut', 'Cut');
     addButton('paste', 'Paste');
-
     function addButton(action, label) {
         editor.ui.componentFactory.add(action, (locale) => {
             const view = new ButtonView(locale);
@@ -152,12 +160,13 @@ ClassicEditor.builtinPlugins = [
     SpecialCharactersText,
     SpecialCharactersArrowsExtended,
     ClipboardButtons,
-
+    renewFormat,
     customList,
     customListStyle,
     ListStartAttribute,
     InsertTextIcon1,
     InsertTextIcon2,
+    PasteFromOffice,
 ];
 // Editor configuration.
 ClassicEditor.defaultConfig = {
