@@ -8,7 +8,7 @@ ClassicEditor.create(document.querySelector('#editor-area'), {
     renewFormat: {
         format1: {
             data: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'],
-            attr: ['(T)', 'T、'], //T代表上面的字這邊就是顯示兩種(一) 一、
+            attr: ['(T)', 'T、','T--'], //T代表上面的字這邊就是顯示兩種(一) 一、
         },
         format2: {
             data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
