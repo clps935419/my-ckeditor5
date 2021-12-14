@@ -16,3 +16,4 @@ mrgit.json
 
 build/
 !packages/ckeditor5-build-*/build
+boudle-example.zip
