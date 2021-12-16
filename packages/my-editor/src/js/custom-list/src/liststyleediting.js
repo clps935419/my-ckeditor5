@@ -235,20 +235,22 @@ function downcastListStyleAttribute() {
 		dispatcher.on( 'attribute:listStyle:listItem', ( evt, data, conversionApi ) => {
 			const viewWriter = conversionApi.writer;
 			const currentElement = data.item;
-
+			const currentIndent = currentElement._attrs.get('listIndent');
 			const previousElement = getSiblingListItem( currentElement.previousSibling, {
 				sameIndent: true,
 				listIndent: currentElement.getAttribute( 'listIndent' ),
 				direction: 'backward'
 			} );
-
+			console.log('------data',data);
+			
 			const viewItem = conversionApi.mapper.toViewElement( currentElement );
 			
 			// A case when elements represent different lists. We need to separate their container.
 			if ( !areRepresentingSameList( currentElement, previousElement ) ) {
 				viewWriter.breakContainer( viewWriter.createPositionBefore( viewItem ) );
 			}
-			
+			console.log('*****', data.attributeNewValue, viewItem.parent);
+
 			setListStyle( viewWriter, data.attributeNewValue, viewItem.parent );
 		}, { priority: 'low' } );
 	};
@@ -301,7 +303,6 @@ function fixListAfterIndentListCommand( editor ) {
 		const rootIndent = root.getAttribute( 'listIndent' );
 
 		const itemsToUpdate = changedItems.filter( item => item.getAttribute( 'listIndent' ) === rootIndent );
-
 		// A case where a few list items are indented must be checked separately
 		// since `getSiblingListItem()` returns the first changed element.
 		// ■ List item 1.
@@ -445,6 +446,7 @@ function fixListAfterOutdentListCommand( editor ) {
 // @returns {Function}
 function fixListStyleAttributeOnListItemElements( editor ) {
 	return writer => {
+
 		let wasFixed = false;
 		const insertedListItems = getChangedListItems( editor.model.document.differ.getChanges() )
 			.filter( item => {

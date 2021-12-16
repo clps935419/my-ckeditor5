@@ -186,6 +186,7 @@ function getStyleButtonCreator( { editor, listStyleCommand, parentCommandName } 
 
 		button.on( 'execute', () => {
 			// If the content the selection is anchored to is a list, let's change its style.
+
 			if ( parentCommand.value ) {
 				// If the current list style is not set in the model or the style is different than the
 				// one to be applied, simply apply the new style.

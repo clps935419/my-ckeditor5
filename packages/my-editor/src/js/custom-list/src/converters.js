@@ -703,7 +703,7 @@ export function modelChangePostFixer(model, writer) {
             _addListToFix(entry.range.start);
         }
     }
-
+    
     for (const listHead of itemToListHead.values()) {
         _fixListIndents(listHead);
         _fixListTypes(listHead);
@@ -776,21 +776,14 @@ export function modelChangePostFixer(model, writer) {
             item = item.nextSibling;
         }
     }
-
     function _customAddNumLi(item) {
         let count = 0; //數字排序計數器
         let dataContainerArr = []; //排序紀錄儲存的地方
         let prevIndent = -1; //階層的計數器
+        let groupNum = Date.now();//利用日期數值創造每組list流水號
+        
         //確認是否為數字項次符號
-        while (
-            item &&
-            item.is('element', 'listItem')
-        ) {
-            console.warn(
-                '--中文項次處理---',
-                item,
-                item.getAttribute('listStyle')
-            );
+        while (item && item.is('element', 'listItem')) {
             //如果遇到不是數字項次符號就跳過不處理
             if (item.getAttribute('listType') !== 'numbered') {
                 item = item.nextSibling;
@@ -798,10 +791,18 @@ export function modelChangePostFixer(model, writer) {
             }
             const currIndent = item.getAttribute('listIndent'); //取得目前所在階層
             const tmpObj = {
+                group: groupNum,
                 indent: currIndent, //目前階層
                 index: '', //目前數字的排序
                 listStyle: item.getAttribute('listStyle'), //目前的中文樣式
             };
+            console.warn(
+                '--中文項次處理---',
+                item,
+                item.getAttribute('listStyle'),
+                tmpObj,
+                dataContainerArr
+            );
             if (prevIndent === currIndent) {
                 //同一階層排序就+1
                 count += 1;
@@ -824,15 +825,17 @@ export function modelChangePostFixer(model, writer) {
                 changChines(tmpObj, chinesFormatObj),
                 item
             );
-
+            //設定流水號
+            writer.setAttribute('data-group', tmpObj.group, item);
+            console.log('顯示');
             //處理完把目前的資料記錄進去
             prevIndent = currIndent;
             item = item.nextSibling;
             dataContainerArr.push(tmpObj);
 
-            //轉中文處理 
+            //轉中文處理
             //obj為當下的元素資料
-            //chinesFormat為中文格式物件   
+            //chinesFormat為中文格式物件
             function changChines(obj, chinesFormatObj) {
                 const count = obj.index; //目前元素顯示的數字
                 const formatStyle = obj.listStyle || 'format1-0'; //目前元素屬於何種中文樣式，預設為format1-0
@@ -894,7 +897,7 @@ export function modelChangePostFixer(model, writer) {
                         const firstText = targetArr[firstNum];
                         const secText = targetArr[9]; //十
                         return `${firstText}${secText}`;
-                    } else if(num > 20 && num < 100){
+                    } else if (num > 20 && num < 100) {
                         //21以上 EX二十一
                         const firstNum = getDigit(num, 1, true) - 1;
                         const firstText = targetArr[firstNum];
@@ -902,12 +905,12 @@ export function modelChangePostFixer(model, writer) {
                         const thirdNum = getDigit(num, 2, true) - 1;
                         const thirdText = targetArr[thirdNum];
                         return `${firstText}${secText}${thirdText}`;
-                    }else if(num % 100 === 0){
+                    } else if (num % 100 === 0) {
                         //一百、二百、三百
                         const firstNum = getDigit(num, 1, true) - 1;
                         const firstText = targetArr[firstNum];
                         return `${firstText}百`;
-                    }else if(num > 100){
+                    } else if (num > 100) {
                         //一百零一
                         const firstNum = getDigit(num, 1, true) - 1;
                         const firstText = targetArr[firstNum];
@@ -915,7 +918,7 @@ export function modelChangePostFixer(model, writer) {
                         const sectText = targetArr[secNum];
                         const thirdNum = getDigit(num, 3, true) - 1;
                         const thirdText = targetArr[thirdNum];
-                        console.log('>100',num, firstNum, secNum, thirdNum);
+
                         if (parseInt(secNum) === -1) {
                             //一百零一
                             return `${firstText}百零${thirdText}`;
@@ -930,11 +933,8 @@ export function modelChangePostFixer(model, writer) {
                 }
                 //如果是數字無限的情況
                 function unlimitedNumCalc(num, type) {
-                    
-                    return type === 'big' ?
-                        toDBC(num) :
-                        num;
-                    //轉全形   
+                    return type === 'big' ? toDBC(num) : num;
+                    //轉全形
                     function toDBC(txtString) {
                         txtString = txtString + '';
 
@@ -954,18 +954,20 @@ export function modelChangePostFixer(model, writer) {
                         return tmp;
                     }
                 }
-                //abcd有限的情況
+                //abcd、甲乙丙、子丑寅有限的情況
                 function LimitedCalc(num, targetArr) {
-                    return targetArr[num - 1] === undefined ? '' : targetArr[num - 1];
+                    return targetArr[num - 1] === undefined
+                        ? ''
+                        : targetArr[num - 1];
                 }
                 //抓出數字中的第幾個字
                 //number為帶入的數字
                 //n為要抓出的第幾位數
                 //是否從左邊開始
                 function getDigit(number, n, fromLeft) {
-                    const location = fromLeft ?
-                        getDigitCount(number) + 1 - n :
-                        n;
+                    const location = fromLeft
+                        ? getDigitCount(number) + 1 - n
+                        : n;
                     return Math.floor(
                         (number / Math.pow(10, location - 1)) % 10
                     );
