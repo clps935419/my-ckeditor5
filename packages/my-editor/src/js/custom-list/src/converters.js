@@ -776,12 +776,14 @@ export function modelChangePostFixer(model, writer) {
             item = item.nextSibling;
         }
     }
+    
     function _customAddNumLi(item) {
+        const tmpListMap = getListUseNum(item);//找出各階層使用頻率最高的項次樣式
         let count = 0; //數字排序計數器
         let dataContainerArr = []; //排序紀錄儲存的地方
         let prevIndent = -1; //階層的計數器
-        let groupNum = Date.now();//利用日期數值創造每組list流水號
-        
+        let groupNum = Date.now(); //利用日期數值創造每組list流水號
+
         //確認是否為數字項次符號
         while (item && item.is('element', 'listItem')) {
             //如果遇到不是數字項次符號就跳過不處理
@@ -790,11 +792,22 @@ export function modelChangePostFixer(model, writer) {
                 continue;
             }
             const currIndent = item.getAttribute('listIndent'); //取得目前所在階層
+            const currentListStyle = item.getAttribute('listStyle');
+            const currentIndentUseListStyle = tmpListMap.get(currIndent);//取得階層在用的
+            //如果目前的樣式跟階層樣式不一樣就須變更成階層樣式
+            if (currentListStyle !== currentIndentUseListStyle) {
+                writer.setAttribute(
+                    'listStyle',
+                    currentIndentUseListStyle,
+                    item
+                );
+            }
+
             const tmpObj = {
                 group: groupNum,
                 indent: currIndent, //目前階層
                 index: '', //目前數字的排序
-                listStyle: item.getAttribute('listStyle'), //目前的中文樣式
+                listStyle: currentIndentUseListStyle, //目前的中文樣式
             };
             console.warn(
                 '--中文項次處理---',
@@ -827,158 +840,218 @@ export function modelChangePostFixer(model, writer) {
             );
             //設定流水號
             writer.setAttribute('data-group', tmpObj.group, item);
-            console.log('顯示');
             //處理完把目前的資料記錄進去
             prevIndent = currIndent;
             item = item.nextSibling;
             dataContainerArr.push(tmpObj);
+        }
+        //轉中文處理
+        //obj為當下的元素資料
+        //chinesFormat為中文格式物件
+        function changChines(obj, chinesFormatObj) {
+            const count = obj.index; //目前元素顯示的數字
+            const formatStyle = obj.listStyle || 'format1-0'; //目前元素屬於何種中文樣式，預設為format1-0
+            const targetFormatStyle = formatStyle.substring(
+                0,
+                formatStyle.indexOf('-')
+            );
+            const attrPosition = formatStyle.substring(formatStyle.length - 1); //抓最後一個字代表樣式陣列的位址
+            let num = count + 1; //陣列從0開始因此+1從1開始
+            const targetArr = chinesFormatObj[targetFormatStyle].data; //準備轉換的中文陣列
+            const attrArr = chinesFormatObj[targetFormatStyle].attr; //樣式陣列
+            const targetAttr = attrArr[attrPosition]; //目標樣式
+            let output = '';
+            switch (targetFormatStyle) {
+                case 'format1':
+                    output = unlimitedChinesCalc(num, targetArr);
+                    break;
+                case 'format2':
+                    output = unlimitedNumCalc(num, 'small');
+                    break;
+                case 'format3':
+                    output = unlimitedNumCalc(num, 'big');
+                    break;
+                case 'format4':
+                    output = LimitedCalc(num, targetArr);
+                    break;
+                case 'format5':
+                    output = unlimitedChinesCalc(num, targetArr);
+                    break;
+                case 'format6':
+                    output = LimitedCalc(num, targetArr);
 
-            //轉中文處理
-            //obj為當下的元素資料
-            //chinesFormat為中文格式物件
-            function changChines(obj, chinesFormatObj) {
-                const count = obj.index; //目前元素顯示的數字
-                const formatStyle = obj.listStyle || 'format1-0'; //目前元素屬於何種中文樣式，預設為format1-0
-                const targetFormatStyle = formatStyle.substring(
-                    0,
-                    formatStyle.indexOf('-')
-                );
-                const attrPosition = formatStyle.substring(
-                    formatStyle.length - 1
-                ); //抓最後一個字代表樣式陣列的位址
-                let num = count + 1; //陣列從0開始因此+1從1開始
-                const targetArr = chinesFormatObj[targetFormatStyle].data; //準備轉換的中文陣列
-                const attrArr = chinesFormatObj[targetFormatStyle].attr; //樣式陣列
-                const targetAttr = attrArr[attrPosition]; //目標樣式
-                let output = '';
-                switch (targetFormatStyle) {
-                    case 'format1':
-                        output = unlimitedChinesCalc(num, targetArr);
-                        break;
-                    case 'format2':
-                        output = unlimitedNumCalc(num, 'small');
-                        break;
-                    case 'format3':
-                        output = unlimitedNumCalc(num, 'big');
-                        break;
-                    case 'format4':
-                        output = LimitedCalc(num, targetArr);
-                        break;
-                    case 'format5':
-                        output = unlimitedChinesCalc(num, targetArr);
-                        break;
-                    case 'format6':
-                        output = LimitedCalc(num, targetArr);
+                    break;
+                case 'format7':
+                    output = LimitedCalc(num, targetArr);
+                    break;
+                default:
+                    break;
+            }
 
-                        break;
-                    case 'format7':
-                        output = LimitedCalc(num, targetArr);
-                        break;
-                    default:
-                        break;
-                }
+            return output === '' ? '' : targetAttr.replace(/T/, output);
 
-                return output === '' ? '' : targetAttr.replace(/T/, output);
+            //如果是中文無限的情況
+            function unlimitedChinesCalc(num, targetArr) {
+                if (num < 11) {
+                    //這邊是1到10
+                    return targetArr[num - 1];
+                } else if (num < 20) {
+                    //10-19 EX十一
+                    const firstText = targetArr[9]; //十
+                    const secNum = getDigit(num, 2, true) - 1;
+                    const secText = targetArr[secNum];
+                    return `${firstText}${secText}`;
+                } else if (num % 10 === 0 && num < 100) {
+                    //EX二十、三十、四十
+                    const firstNum = getDigit(num, 1, true) - 1;
+                    const firstText = targetArr[firstNum];
+                    const secText = targetArr[9]; //十
+                    return `${firstText}${secText}`;
+                } else if (num > 20 && num < 100) {
+                    //21以上 EX二十一
+                    const firstNum = getDigit(num, 1, true) - 1;
+                    const firstText = targetArr[firstNum];
+                    const secText = targetArr[9]; //十
+                    const thirdNum = getDigit(num, 2, true) - 1;
+                    const thirdText = targetArr[thirdNum];
+                    return `${firstText}${secText}${thirdText}`;
+                } else if (num % 100 === 0) {
+                    //一百、二百、三百
+                    const firstNum = getDigit(num, 1, true) - 1;
+                    const firstText = targetArr[firstNum];
+                    return `${firstText}百`;
+                } else if (num > 100) {
+                    //一百零一
+                    const firstNum = getDigit(num, 1, true) - 1;
+                    const firstText = targetArr[firstNum];
+                    const secNum = getDigit(num, 2, true) - 1;
+                    const sectText = targetArr[secNum];
+                    const thirdNum = getDigit(num, 3, true) - 1;
+                    const thirdText = targetArr[thirdNum];
 
-                //如果是中文無限的情況
-                function unlimitedChinesCalc(num, targetArr) {
-                    if (num < 11) {
-                        //這邊是1到10
-                        return targetArr[num - 1];
-                    } else if (num < 20) {
-                        //10-19 EX十一
-                        const firstText = targetArr[9]; //十
-                        const secNum = getDigit(num, 2, true) - 1;
-                        const secText = targetArr[secNum];
-                        return `${firstText}${secText}`;
-                    } else if (num % 10 === 0 && num < 100) {
-                        //EX二十、三十、四十
-                        const firstNum = getDigit(num, 1, true) - 1;
-                        const firstText = targetArr[firstNum];
-                        const secText = targetArr[9]; //十
-                        return `${firstText}${secText}`;
-                    } else if (num > 20 && num < 100) {
-                        //21以上 EX二十一
-                        const firstNum = getDigit(num, 1, true) - 1;
-                        const firstText = targetArr[firstNum];
-                        const secText = targetArr[9]; //十
-                        const thirdNum = getDigit(num, 2, true) - 1;
-                        const thirdText = targetArr[thirdNum];
-                        return `${firstText}${secText}${thirdText}`;
-                    } else if (num % 100 === 0) {
-                        //一百、二百、三百
-                        const firstNum = getDigit(num, 1, true) - 1;
-                        const firstText = targetArr[firstNum];
-                        return `${firstText}百`;
-                    } else if (num > 100) {
+                    if (parseInt(secNum) === -1) {
                         //一百零一
-                        const firstNum = getDigit(num, 1, true) - 1;
-                        const firstText = targetArr[firstNum];
-                        const secNum = getDigit(num, 2, true) - 1;
-                        const sectText = targetArr[secNum];
-                        const thirdNum = getDigit(num, 3, true) - 1;
-                        const thirdText = targetArr[thirdNum];
-
-                        if (parseInt(secNum) === -1) {
-                            //一百零一
-                            return `${firstText}百零${thirdText}`;
-                        } else if (thirdNum === -1) {
-                            //一百一十
-                            return `${firstText}百${sectText}十`;
-                        } else {
-                            //一百一十一
-                            return `${firstText}百${sectText}十${thirdText}`;
-                        }
+                        return `${firstText}百零${thirdText}`;
+                    } else if (thirdNum === -1) {
+                        //一百一十
+                        return `${firstText}百${sectText}十`;
+                    } else {
+                        //一百一十一
+                        return `${firstText}百${sectText}十${thirdText}`;
                     }
                 }
-                //如果是數字無限的情況
-                function unlimitedNumCalc(num, type) {
-                    return type === 'big' ? toDBC(num) : num;
-                    //轉全形
-                    function toDBC(txtString) {
-                        txtString = txtString + '';
+            }
+            //如果是數字無限的情況
+            function unlimitedNumCalc(num, type) {
+                return type === 'big' ? toDBC(num) : num;
+                //轉全形
+                function toDBC(txtString) {
+                    txtString = txtString + '';
 
-                        var tmp = '';
-                        for (var i = 0; i < txtString.length; i++) {
-                            if (txtString.charCodeAt(i) == 32) {
-                                tmp = tmp + String.fromCharCode(12288);
-                            }
-                            if (txtString.charCodeAt(i) < 127) {
-                                tmp =
-                                    tmp +
-                                    String.fromCharCode(
-                                        txtString.charCodeAt(i) + 65248
-                                    );
-                            }
+                    var tmp = '';
+                    for (var i = 0; i < txtString.length; i++) {
+                        if (txtString.charCodeAt(i) == 32) {
+                            tmp = tmp + String.fromCharCode(12288);
                         }
-                        return tmp;
+                        if (txtString.charCodeAt(i) < 127) {
+                            tmp =
+                                tmp +
+                                String.fromCharCode(
+                                    txtString.charCodeAt(i) + 65248
+                                );
+                        }
                     }
+                    return tmp;
                 }
-                //abcd、甲乙丙、子丑寅有限的情況
-                function LimitedCalc(num, targetArr) {
-                    return targetArr[num - 1] === undefined
-                        ? ''
-                        : targetArr[num - 1];
-                }
-                //抓出數字中的第幾個字
-                //number為帶入的數字
-                //n為要抓出的第幾位數
-                //是否從左邊開始
-                function getDigit(number, n, fromLeft) {
-                    const location = fromLeft
-                        ? getDigitCount(number) + 1 - n
-                        : n;
-                    return Math.floor(
-                        (number / Math.pow(10, location - 1)) % 10
-                    );
-                }
+            }
+            //abcd、甲乙丙、子丑寅有限的情況
+            function LimitedCalc(num, targetArr) {
+                return targetArr[num - 1] === undefined
+                    ? ''
+                    : targetArr[num - 1];
+            }
+            //抓出數字中的第幾個字
+            //number為帶入的數字
+            //n為要抓出的第幾位數
+            //是否從左邊開始
+            function getDigit(number, n, fromLeft) {
+                const location = fromLeft ? getDigitCount(number) + 1 - n : n;
+                return Math.floor((number / Math.pow(10, location - 1)) % 10);
+            }
 
-                function getDigitCount(number) {
-                    return (
-                        Math.max(Math.floor(Math.log10(Math.abs(number))), 0) +
-                        1
-                    );
+            function getDigitCount(number) {
+                return (
+                    Math.max(Math.floor(Math.log10(Math.abs(number))), 0) + 1
+                );
+            }
+        }
+        //找出各階層用的編號格式
+        function getListUseNum(item) {
+            const tmpListMap = new Map();
+            while (item && item.is('element', 'listItem')) {
+                //如果遇到不是數字項次符號就跳過不處理
+                if (item.getAttribute('listType') !== 'numbered') {
+                    item = item.nextSibling;
+                    continue;
                 }
+                const indent = item.getAttribute('listIndent');
+                const listStyle = item.getAttribute('listStyle');
+                let target = tmpListMap.get(indent);
+
+                if (target === undefined) {
+                    tmpListMap.set(indent, [listStyle]);
+                    item = item.nextSibling;
+                    continue;
+                }
+                target.push(listStyle);
+                tmpListMap.set(indent, target);
+                item = item.nextSibling;
+                continue;
+            }
+            //找出頻率最高的樣式然後寫回去map
+            tmpListMap.forEach(function (value, key, map) {
+                console.log(`${key}=>${value}`);
+                tmpListMap.set(key, findMostEle(value));
+            });
+            console.log('map', tmpListMap);
+
+            return tmpListMap;
+
+            //找出陣列頻率最高的元素
+            function findMostEle(arr) {
+                let maxEle = null;
+                let maxNum = 1;
+                if(arr.length===1){
+                    return arr[0];
+                }else if(arr.length ===2){
+                    //回傳不等於預設的樣式
+                    //format1-0為預設樣式
+
+                    //回傳不是預設樣式的陣列
+                    const tmpFilterArr = arr.filter((item) => {
+                        return item !== 'format1-0';
+                    });
+                    
+                    if(tmpFilterArr.length===0){
+                        //兩個都是format1-0就回傳format1-0
+                        return 'format1-0';
+                    }else{
+                        //回傳不是format1-0
+                        return tmpFilterArr[0];
+                    }
+                }else{
+                    //回傳頻率最高的
+                    let obj = arr.reduce((p, k) => {
+                        p[k] ? p[k]++ : (p[k] = 1);
+                        if (p[k] >= maxNum) {
+                            maxEle = k;
+                            maxNum++;
+                        }
+                        return p;
+                    }, {});
+                    return maxEle;
+                }
+                
             }
         }
     }

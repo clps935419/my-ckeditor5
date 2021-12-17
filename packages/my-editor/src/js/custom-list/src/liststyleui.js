@@ -47,9 +47,7 @@ export default class ListStyleUI extends Plugin {
 
 	init() {
 		const editor = this.editor;
-		const t = editor.locale.t;
-		console.log('qqqqq', createMyDropdownData(chinesFormatObj, t));
-		
+		const t = editor.locale.t;		
 
 		editor.ui.componentFactory.add( 'bulletedList', getSplitButtonCreator( {
 			editor,
@@ -104,8 +102,6 @@ function createMyDropdownData(chinesFormatObj, t) {
             };
             return tmpObj;
         });
-        console.log('****', tmpFormatArr);
-
         tmpArr.push(...tmpFormatArr);
     }
 	return tmpArr;

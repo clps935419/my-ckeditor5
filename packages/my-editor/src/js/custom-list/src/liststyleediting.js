@@ -235,13 +235,11 @@ function downcastListStyleAttribute() {
 		dispatcher.on( 'attribute:listStyle:listItem', ( evt, data, conversionApi ) => {
 			const viewWriter = conversionApi.writer;
 			const currentElement = data.item;
-			const currentIndent = currentElement._attrs.get('listIndent');
 			const previousElement = getSiblingListItem( currentElement.previousSibling, {
 				sameIndent: true,
 				listIndent: currentElement.getAttribute( 'listIndent' ),
 				direction: 'backward'
 			} );
-			console.log('------data',data);
 			
 			const viewItem = conversionApi.mapper.toViewElement( currentElement );
 			
@@ -249,7 +247,6 @@ function downcastListStyleAttribute() {
 			if ( !areRepresentingSameList( currentElement, previousElement ) ) {
 				viewWriter.breakContainer( viewWriter.createPositionBefore( viewItem ) );
 			}
-			console.log('*****', data.attributeNewValue, viewItem.parent);
 
 			setListStyle( viewWriter, data.attributeNewValue, viewItem.parent );
 		}, { priority: 'low' } );
