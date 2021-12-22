@@ -68,7 +68,6 @@ let chinesFormatObj = {
     },
 };
 export function renewFormat(editor) {
-    console.log('測試', editor.config, editor.config._config.renewFormat);
     chinesFormatObj =
         editor.config._config.renewFormat === undefined
             ? chinesFormatObj

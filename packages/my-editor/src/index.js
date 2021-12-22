@@ -34,7 +34,6 @@ import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
 import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
 
 
-
 //客製樣式
 import './css/custom.css';
 
@@ -57,34 +56,6 @@ import { renewFormat } from './js/custom-list/src/chinesFormatData.js';
 
 
 
-function ClipboardButtons(editor) {
-    addButton('copy', 'Copy');
-    addButton('cut', 'Cut');
-    addButton('paste', 'Paste');
-    function addButton(action, label) {
-        editor.ui.componentFactory.add(action, (locale) => {
-            const view = new ButtonView(locale);
-
-            view.set({
-                label: label,
-                // Or use the 'icon' property.
-                withText: true,
-                tooltip: true,
-            });
-
-            view.on('execute', () => {
-                if (action === 'paste') {
-                    alert('Sorry man, no can do!');
-                    document.execCommand(action);
-                } else {
-                    document.execCommand(action);
-                }
-            });
-
-            return view;
-        });
-    }
-}
 class ListStartAttribute extends Plugin {
     init() {
         const editor = this.editor;
@@ -159,14 +130,13 @@ ClassicEditor.builtinPlugins = [
     SpecialCharacters,
     SpecialCharactersText,
     SpecialCharactersArrowsExtended,
-    ClipboardButtons,
     renewFormat,
     customList,
     customListStyle,
     ListStartAttribute,
     InsertTextIcon1,
     InsertTextIcon2,
-    PasteFromOffice,
+    // PasteFromOffice,
 ];
 // Editor configuration.
 ClassicEditor.defaultConfig = {
