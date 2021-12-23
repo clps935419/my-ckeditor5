@@ -271,8 +271,14 @@ function downcastListStyleAttribute() {
 	// @param {module:engine/view/element~Element} element
 	function setListStyle( writer, listStyle, element ) {
 		if ( listStyle && listStyle !== DEFAULT_LIST_TYPE ) {
-			//葳橋設定:取消將設定寫在css style上
-			// writer.setStyle( 'list-style-type', listStyle, element );
+			//葳橋設定:取消將設定寫在css style上，
+			//只有bullet才會使用，如果使用數字自訂符號就不使用
+			const restrictionArr = ['square','circle','disc'];
+			if (!restrictionArr.includes(listStyle)) {
+				writer.setStyle('list-style-type', '', element);
+				return;
+            }
+			writer.setStyle( 'list-style-type', listStyle, element );
 		} else {
 			writer.removeStyle( 'list-style-type', element );
 		}
