@@ -69,8 +69,9 @@ export default class ListStyleCommand extends Command {
 			.flat();
         //葳橋 處理各階層連動一起變換項次符號
         const allListArr = listItems[0].parent._children._nodes;
-        const currIndent = listItems[0]._attrs.get('listIndent');
+        const currIndent = listItems[0]._attrs.get('listIndent');//目前階層
 		const currGroup = listItems[0]._attrs.get('data-group');//目前流水號
+		const currListType = listItems[0]._attrs.get('listType');//目前的type
         const filterArr = allListArr.filter((item) => {
 			//回傳階層、群組流水號一樣的List
             return (
@@ -91,6 +92,8 @@ export default class ListStyleCommand extends Command {
 			for ( const item of listItems ) {
 				console.warn('處理', options.type);
 				writer.setAttribute( 'listStyle', options.type || this._defaultType, item );
+				//要考慮會點bullet然後又設定數字會壞掉，所以須設定此屬性
+				writer.setAttribute('listType', currListType,item);
 			}
 		} );
 	}

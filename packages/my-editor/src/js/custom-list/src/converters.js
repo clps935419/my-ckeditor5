@@ -786,6 +786,7 @@ export function modelChangePostFixer(model, writer) {
 
         //確認是否為數字項次符號
         while (item && item.is('element', 'listItem')) {
+            console.warn('type', item.getAttribute('listType'));
             //如果遇到不是數字項次符號就跳過不處理
             if (item.getAttribute('listType') !== 'numbered') {
                 item = item.nextSibling;
@@ -988,7 +989,10 @@ export function modelChangePostFixer(model, writer) {
         //找出各階層用的編號格式
         function getListUseNum(item) {
             const tmpListMap = new Map();
+            const finalMap = new Map();
+            let lastIndent = null;//紀錄上一個階層是多少
             while (item && item.is('element', 'listItem')) {
+                console.warn('頻率判斷',item, item.getAttribute('listType'));
                 //如果遇到不是數字項次符號就跳過不處理
                 if (item.getAttribute('listType') !== 'numbered') {
                     item = item.nextSibling;
@@ -1000,22 +1004,33 @@ export function modelChangePostFixer(model, writer) {
 
                 if (target === undefined) {
                     tmpListMap.set(indent, [listStyle]);
+                    console.log('進去1', item, indent, listStyle);
+                    item = item.nextSibling;
+                    lastIndent = indent;
+                    continue;
+                }
+                //如果跟上一個item同階層代表他們是同一個OL底下的item，因此同階層只記錄一次
+                if(lastIndent === indent){
+                    console.log('一樣2');
+                    lastIndent = indent;
                     item = item.nextSibling;
                     continue;
                 }
+                console.log('加', item, indent, tmpListMap);
                 target.push(listStyle);
                 tmpListMap.set(indent, target);
                 item = item.nextSibling;
+                lastIndent = indent;
                 continue;
             }
             //找出頻率最高的樣式然後寫回去map
             tmpListMap.forEach(function (value, key, map) {
                 console.log(`${key}=>${value}`);
-                tmpListMap.set(key, findMostEle(value));
+                finalMap.set(key, findMostEle(value));
             });
-            console.log('map', tmpListMap);
+            console.log('map', tmpListMap, finalMap);
 
-            return tmpListMap;
+            return finalMap;
 
             //找出陣列頻率最高的元素
             function findMostEle(arr) {

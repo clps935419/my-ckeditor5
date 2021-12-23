@@ -40,3 +40,10 @@ ol{
 ul{
     padding-inline-start:1em;
 }
+/* list選單打開排版 */
+.ck.ck-list-styles-dropdown>.ck-dropdown__panel>.ck-toolbar>.ck-toolbar__items {
+    grid-template-columns: repeat(3,auto);
+    row-gap: var(--ck-spacing-medium);
+    column-gap: var(--ck-spacing-medium);
+    padding: var(--ck-spacing-medium);
+}
