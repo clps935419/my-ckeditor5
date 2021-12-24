@@ -183,7 +183,10 @@ export function modelViewChangeIndent(model) {
 
         const viewItem = conversionApi.mapper.toViewElement(data.item);
         const viewWriter = conversionApi.writer;
-
+        console.log('indent', data,data.item._attrs.get('listIndent'));
+        // if(data.item._attrs.get('listIndent') === 2){
+        //     data.item._attrs.set('listIndent',1);
+        // }
         // 1. Break the container after and before the list item.
         // This will create a view list with one view list item -- the one that changed type.
         viewWriter.breakContainer(viewWriter.createPositionBefore(viewItem));
@@ -691,8 +694,9 @@ export function modelChangePostFixer(model, writer) {
             entry.type == 'attribute' &&
             entry.attributeKey == 'listIndent'
         ) {
-
             _addListToFix(entry.range.start);
+            console.log('indent動', itemToListHead);
+
         } else if (
             entry.type == 'attribute' &&
             entry.attributeKey == 'listType'
@@ -786,7 +790,6 @@ export function modelChangePostFixer(model, writer) {
 
         //確認是否為數字項次符號
         while (item && item.is('element', 'listItem')) {
-            console.warn('type', item.getAttribute('listType'));
             //如果遇到不是數字項次符號就跳過不處理
             if (item.getAttribute('listType') !== 'numbered') {
                 item = item.nextSibling;
@@ -810,13 +813,7 @@ export function modelChangePostFixer(model, writer) {
                 index: '', //目前數字的排序
                 listStyle: currentIndentUseListStyle, //目前的中文樣式
             };
-            console.warn(
-                '--中文項次處理---',
-                item,
-                item.getAttribute('listStyle'),
-                tmpObj,
-                dataContainerArr
-            );
+            
             if (prevIndent === currIndent) {
                 //同一階層排序就+1
                 count += 1;
@@ -832,7 +829,7 @@ export function modelChangePostFixer(model, writer) {
                 count = filterArr[filterArr.length - 1].index + 1;
             }
             tmpObj.index = count;
-
+            console.warn('中文處理', item);
             //轉中文並設定HTML上
             writer.setAttribute(
                 'data-content',
@@ -992,7 +989,6 @@ export function modelChangePostFixer(model, writer) {
             const finalMap = new Map();
             let lastIndent = null;//紀錄上一個階層是多少
             while (item && item.is('element', 'listItem')) {
-                console.warn('頻率判斷',item, item.getAttribute('listType'));
                 //如果遇到不是數字項次符號就跳過不處理
                 if (item.getAttribute('listType') !== 'numbered') {
                     item = item.nextSibling;
@@ -1004,19 +1000,16 @@ export function modelChangePostFixer(model, writer) {
 
                 if (target === undefined) {
                     tmpListMap.set(indent, [listStyle]);
-                    console.log('進去1', item, indent, listStyle);
                     item = item.nextSibling;
                     lastIndent = indent;
                     continue;
                 }
                 //如果跟上一個item同階層代表他們是同一個OL底下的item，因此同階層只記錄一次
                 if(lastIndent === indent){
-                    console.log('一樣2');
                     lastIndent = indent;
                     item = item.nextSibling;
                     continue;
                 }
-                console.log('加', item, indent, tmpListMap);
                 target.push(listStyle);
                 tmpListMap.set(indent, target);
                 item = item.nextSibling;
@@ -1025,10 +1018,8 @@ export function modelChangePostFixer(model, writer) {
             }
             //找出頻率最高的樣式然後寫回去map
             tmpListMap.forEach(function (value, key, map) {
-                console.log(`${key}=>${value}`);
                 finalMap.set(key, findMostEle(value));
             });
-            console.log('map', tmpListMap, finalMap);
 
             return finalMap;
 

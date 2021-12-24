@@ -66,7 +66,24 @@ export default class IndentCommand extends Command {
 
 				next = next.nextSibling;
 			}
-
+			//葳橋:改寫indent時會第一個後的子項目會往後移動整個ol，因此這邊把往後移動的減回來
+			if (this._indentBy > 0 && itemsToChange.length > 2) {
+				itemsToChange.forEach((item,index)=>{
+					console.log('item',item)
+					const currIndent = item._attrs.get('listIndent');
+					const firstIndent =
+                        itemsToChange[0]._attrs.get('listIndent');
+					//第一個子項目indent會-1，但是第一個後的OL區塊indent會加1，因此把不是跟第一層indent的OL的indent減回來
+					if (index >= 1 && currIndent !== firstIndent) {
+                        writer.setAttribute(
+                            'listIndent',
+                            item._attrs.get('listIndent') - 1,
+                            item
+                        );
+                    }
+				});
+            }
+            console.log('設定indent', itemsToChange);
 			// We need to be sure to keep model in correct state after each small change, because converters
 			// bases on that state and assumes that model is correct.
 			// Because of that, if the command outdents items, we will outdent them starting from the last item, as
@@ -74,10 +91,18 @@ export default class IndentCommand extends Command {
 			if ( this._indentBy < 0 ) {
 				itemsToChange = itemsToChange.reverse();
 			}
+			
 
 			for ( const item of itemsToChange ) {
 				const indent = item.getAttribute( 'listIndent' ) + this._indentBy;
-
+                console.log(
+                    '🚀 ~ file: indentcommand.js ~ line 81 ~ IndentCommand ~ execute ~ indent',
+                    indent,
+					this._indentBy,
+					this,
+                    item
+                );
+				
 				// If indent is lower than 0, it means that the item got outdented when it was not indented.
 				// This means that we need to convert that list item to paragraph.
 				if ( indent < 0 ) {

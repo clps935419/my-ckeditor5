@@ -79,7 +79,6 @@ export default class ListStyleCommand extends Command {
                 item._attrs.get('data-group') === currGroup
             );
         });
-        console.log('處理各階層連動一起變換項次符號', listItems[0], filterArr);	
 
 		// Since `getSelectedBlocks()` can return items that belong to the same list, and
 		// `getSiblingNodes()` returns the entire list, we need to remove duplicated items.
@@ -90,7 +89,6 @@ export default class ListStyleCommand extends Command {
         
 		model.change( writer => {
 			for ( const item of listItems ) {
-				console.warn('處理', options.type);
 				writer.setAttribute( 'listStyle', options.type || this._defaultType, item );
 				//要考慮會點bullet然後又設定數字會壞掉，所以須設定此屬性
 				writer.setAttribute('listType', currListType,item);
