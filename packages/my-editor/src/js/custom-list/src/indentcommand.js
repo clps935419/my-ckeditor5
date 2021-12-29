@@ -67,7 +67,7 @@ export default class IndentCommand extends Command {
 				next = next.nextSibling;
 			}
 			//葳橋:改寫indent時會第一個後的子項目會往後移動整個ol，因此這邊把往後移動的減回來
-			if (this._indentBy > 0 && itemsToChange.length > 2) {
+			if (this._indentBy > 0 && itemsToChange.length >= 2) {
 				itemsToChange.forEach((item,index)=>{
 					console.log('item',item)
 					const currIndent = item._attrs.get('listIndent');
@@ -75,6 +75,7 @@ export default class IndentCommand extends Command {
                         itemsToChange[0]._attrs.get('listIndent');
 					//第一個子項目indent會-1，但是第一個後的OL區塊indent會加1，因此把不是跟第一層indent的OL的indent減回來
 					if (index >= 1 && currIndent !== firstIndent) {
+						console.log('-1',item);
                         writer.setAttribute(
                             'listIndent',
                             item._attrs.get('listIndent') - 1,
