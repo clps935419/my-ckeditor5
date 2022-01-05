@@ -183,11 +183,8 @@ ClassicEditor.defaultConfig = {
         ],
     },
     indentBlock: {
-        classes: [
-            'custom-block-indent-a', // First step - smallest indentation.
-            'custom-block-indent-b',
-            'custom-block-indent-c', // Last step - biggest indentation.
-        ],
+        offset: 1,
+        unit: 'em',
     },
     fontSize: {
         options: [12, 14, '預設', 16, 18, 20, 22, 24, 26, 28, 30],
