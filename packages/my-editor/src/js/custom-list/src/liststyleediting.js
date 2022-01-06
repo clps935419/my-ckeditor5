@@ -276,6 +276,7 @@ function downcastListStyleAttribute() {
 			const restrictionArr = ['square','circle','disc'];
 			if (!restrictionArr.includes(listStyle)) {
 				writer.setStyle('list-style-type', '', element);
+				writer.removeStyle('list-style-type', element);
 				return;
             }
 			writer.setStyle( 'list-style-type', listStyle, element );

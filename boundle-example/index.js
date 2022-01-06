@@ -1,7 +1,3 @@
-function $ (str){
-    return document.querySelector(str);
-}
-
 ClassicEditor.create(document.querySelector('#editor-area'), {
     //帶入自訂的中文格式
     //format1、format2如果改名字需一併調整chinesFormatData.js、coverter.js
@@ -88,7 +84,8 @@ ClassicEditor.create(document.querySelector('#editor-area'), {
     .then((editor) => {
         document.querySelector('#submit').addEventListener('click', () => {
             console.log('get', editor.getData());
-            $('.show-content1').innerText = editor.getData();
+            document.querySelector('.show-content1').innerText =
+                editor.getData();
             document.querySelector('.outputArea').innerHTML = editor.getData();
         });
     })
@@ -183,7 +180,8 @@ ClassicEditor.create(document.querySelector('#editor-area2'), {
             'click',
             () => {
                 console.log('get', editor.getData());
-                $('.show-content2').innerText = editor.getData();
+                document.querySelector('.show-content2').innerText =
+                    editor.getData();
                 document.querySelector('.outputArea').innerHTML =
                     editor.getData();
             },

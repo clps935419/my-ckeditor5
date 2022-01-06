@@ -1,5 +1,3 @@
-import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
-
 export function SpecialCharactersArrowsExtended(editor) {
     editor.plugins.get('SpecialCharacters').addItems('常用', [
         {

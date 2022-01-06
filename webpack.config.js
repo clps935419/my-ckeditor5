@@ -8,7 +8,7 @@ const { styles } = require('@ckeditor/ckeditor5-dev-utils');
 const port = 8000;
 
 module.exports = {
-    entry: './example/index.js',
+    entry: './dev_server_example/index.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.js',
@@ -78,8 +78,8 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            title: 'Example',
-            template: 'example/index.html',
+            title: 'dev_server_example',
+            template: 'dev_server_example/index.html',
         }),
     ],
 };

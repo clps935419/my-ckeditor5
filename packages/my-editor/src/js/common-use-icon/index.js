@@ -1,83 +1,29 @@
 import ButtonView from '@ckeditor/ckeditor5-ui/src/button/buttonview';
 import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
-export class InsertTextIcon1 extends Plugin {
+export class InsertTextIcons extends Plugin {
     init() {
         const editor = this.editor;
+        const targetIcons = ['【】', '，','--'];
+        targetIcons.forEach((item,index,arr) => {
+            editor.ui.componentFactory.add(`InsertTextIcon${index}`, (locale) => {
+                const view = new ButtonView(locale);
+                const target = item;
 
-        editor.ui.componentFactory.add('InsertTextIcon1', (locale) => {
-            const view = new ButtonView(locale);
-
-            view.set({
-                label: '【】',
-                withText: true,
-                tooltip: true,
-                // icon: imageIcon,
-                // tooltip: true,
-            });
-
-            // Callback executed once the image is clicked.
-            view.on('execute', () => {
-                // const imageURL = prompt('Image URL')
-                editor.model.change((writer) => {
-                    const insertPosition =
-                        editor.model.document.selection.getFirstPosition();
-                    writer.insertText('【】', insertPosition);
+                view.set({
+                    label: target,
+                    withText: true,
+                    tooltip: true,
                 });
-            });
 
-            return view;
-        });
-        editor.ui.componentFactory.add('InsertTextIcon2', (locale) => {
-            const view = new ButtonView(locale);
-
-            view.set({
-                label: '，',
-                withText: true,
-                tooltip: true,
-                // icon: imageIcon,
-                // tooltip: true,
-            });
-
-            // Callback executed once the image is clicked.
-            view.on('execute', () => {
-                // const imageURL = prompt('Image URL')
-                editor.model.change((writer) => {
-                    const insertPosition =
-                        editor.model.document.selection.getFirstPosition();
-                    writer.insertText('，', insertPosition);
+                view.on('execute', () => {
+                    editor.model.change((writer) => {
+                        const insertPosition =
+                            editor.model.document.selection.getFirstPosition();
+                        writer.insertText(target, insertPosition);
+                    });
                 });
+                return view;
             });
-
-            return view;
-        });
-    }
-}
-export class InsertTextIcon2 extends Plugin {
-    init() {
-        const editor = this.editor;
-
-        editor.ui.componentFactory.add('InsertTextIcon2', (locale) => {
-            const view = new ButtonView(locale);
-
-            view.set({
-                label: '，',
-                withText: true,
-                tooltip: true,
-                // icon: imageIcon,
-                // tooltip: true,
-            });
-
-            // Callback executed once the image is clicked.
-            view.on('execute', () => {
-                // const imageURL = prompt('Image URL')
-                editor.model.change((writer) => {
-                    const insertPosition =
-                        editor.model.document.selection.getFirstPosition();
-                    writer.insertText('，', insertPosition);
-                });
-            });
-
-            return view;
         });
     }
 }

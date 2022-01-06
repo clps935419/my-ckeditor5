@@ -84,7 +84,6 @@ ClassicEditor.create(document.querySelector('#editor-area'), {
     },
 })
     .then((editor) => {
-        console.log('ed', editor);
         CKEditorInspector.attach(editor);
         document.querySelector('#submit').addEventListener('click', () => {
             console.log('get', editor.getData());

@@ -183,7 +183,6 @@ export function modelViewChangeIndent(model) {
 
         const viewItem = conversionApi.mapper.toViewElement(data.item);
         const viewWriter = conversionApi.writer;
-        console.log('indent', data,data.item._attrs.get('listIndent'));
         // if(data.item._attrs.get('listIndent') === 2){
         //     data.item._attrs.set('listIndent',1);
         // }
@@ -695,7 +694,6 @@ export function modelChangePostFixer(model, writer) {
             entry.attributeKey == 'listIndent'
         ) {
             _addListToFix(entry.range.start);
-            console.log('indent動', itemToListHead);
 
         } else if (
             entry.type == 'attribute' &&
@@ -829,7 +827,6 @@ export function modelChangePostFixer(model, writer) {
                 count = filterArr[filterArr.length - 1].index + 1;
             }
             tmpObj.index = count;
-            console.warn('中文處理', item);
             //轉中文並設定HTML上
             writer.setAttribute(
                 'data-content',
