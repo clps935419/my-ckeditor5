@@ -31,7 +31,8 @@ import customListStyle from './js/custom-list/src/ListStyle';
 import { renewFormat } from './js/custom-list/src/chinesFormatData.js';
 //顯示中文的處理，這邊是把data-contetn加入至HTML上
 import showDataContentProcess from './js/custom-list/src/showDataContentProcess.js';
-
+//將編輯器UI翻譯成中文
+import './js/translate.js';
 
 export default class ClassicEditor extends ClassicEditorBase {}
 

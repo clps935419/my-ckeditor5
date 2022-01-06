@@ -26,6 +26,6 @@
     },
     "scripts": {
         "dev": "webpack-dev-server --mode development --config webpack.config.js",
-        "build": "yarn workspaces my-editor run build"
+        "build": "yarn workspace my-editor run build"
     }
 }
