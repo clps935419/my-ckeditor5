@@ -1,6 +1,5 @@
 !(function (e) {
     const t = (e.zh = e.zh || {});
-    console.log('t',t,e);
     (t.dictionary = Object.assign(t.dictionary || {}, {
         '%0 of %1': '%0/%1',
         Aquamarine: '淺綠色',

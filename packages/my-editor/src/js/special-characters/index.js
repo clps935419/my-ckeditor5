@@ -1,5 +1,4 @@
 export function SpecialCharactersArrowsExtended(editor) {
-    console.log('----', editor.plugins.get('SpecialCharacters'));
     editor.plugins.get('SpecialCharacters').addItems('常用', [
         {
             title: '大括號',

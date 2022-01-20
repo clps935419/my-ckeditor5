@@ -1,6 +1,26 @@
 import ClassicEditor from '../packages/my-editor/src/index.js';
 import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
 ClassicEditor.create(document.querySelector('#editor-area'), {
+    //這邊是各系統可以個別設定要顯示的功能，如果不寫就是預設全部顯示
+    toolbar: {
+        items: [
+            'undo',
+            'redo',
+            '|',
+            'bold',
+            'italic',
+            'underline',
+            'bulletedList',
+            'numberedList',
+            '|',
+            'outdent',
+            'indent',
+            '|',
+            'specialCharacters',
+            '|',
+            'InsertTextIcon0',
+        ],
+    },
     //帶入自訂的中文格式
     //format1、format2如果改名字需一併調整chinesFormatData.js、coverter.js
     renewFormat: {
@@ -63,7 +83,7 @@ ClassicEditor.create(document.querySelector('#editor-area'), {
         },
         format6: {
             data: ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'],
-            attr: ['(T)'],
+            attr: ['T、', '(T)'],
         },
         format7: {
             data: [
@@ -78,8 +98,9 @@ ClassicEditor.create(document.querySelector('#editor-area'), {
                 '申',
                 '酉',
                 '戌',
+                '亥',
             ],
-            attr: ['(T)'],
+            attr: ['T、', '(T)'],
         },
     },
 })
@@ -156,7 +177,7 @@ ClassicEditor.create(document.querySelector('#editor-area2'), {
         },
         format6: {
             data: ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'],
-            attr: ['(T)'],
+            attr: ['T、', '(T)'],
         },
         format7: {
             data: [
@@ -171,8 +192,9 @@ ClassicEditor.create(document.querySelector('#editor-area2'), {
                 '申',
                 '酉',
                 '戌',
+                '亥',
             ],
-            attr: ['(T)'],
+            attr: ['T、', '(T)'],
         },
     },
 })

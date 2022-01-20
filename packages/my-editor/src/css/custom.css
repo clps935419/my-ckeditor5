@@ -47,3 +47,7 @@ ul{
     column-gap: var(--ck-spacing-medium);
     padding: var(--ck-spacing-medium);
 }
+.ck.ck-list-styles-dropdown>.ck-dropdown__panel>.ck-toolbar>.ck-toolbar__items .ck-button .ck-icon {
+    width: 44px;
+    height: 44px;
+}

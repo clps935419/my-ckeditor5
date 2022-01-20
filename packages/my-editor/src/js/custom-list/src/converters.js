@@ -774,7 +774,6 @@ export function modelChangePostFixer(model, writer) {
                 fixBy = null;
                 maxIndent = item.getAttribute('listIndent') + 1;
             }
-
             item = item.nextSibling;
         }
     }
@@ -796,6 +795,7 @@ export function modelChangePostFixer(model, writer) {
             const currIndent = item.getAttribute('listIndent'); //取得目前所在階層
             const currentListStyle = item.getAttribute('listStyle');
             const currentIndentUseListStyle = tmpListMap.get(currIndent);//取得階層在用的
+            
             //如果目前的樣式跟階層樣式不一樣就須變更成階層樣式
             if (currentListStyle !== currentIndentUseListStyle) {
                 writer.setAttribute(
@@ -804,7 +804,6 @@ export function modelChangePostFixer(model, writer) {
                     item
                 );
             }
-
             const tmpObj = {
                 group: groupNum,
                 indent: currIndent, //目前階層
@@ -986,6 +985,7 @@ export function modelChangePostFixer(model, writer) {
             const finalMap = new Map();
             let lastIndent = null;//紀錄上一個階層是多少
             while (item && item.is('element', 'listItem')) {
+
                 //如果遇到不是數字項次符號就跳過不處理
                 if (item.getAttribute('listType') !== 'numbered') {
                     item = item.nextSibling;
@@ -994,21 +994,31 @@ export function modelChangePostFixer(model, writer) {
                 const indent = item.getAttribute('listIndent');
                 const listStyle = item.getAttribute('listStyle');
                 let target = tmpListMap.get(indent);
-
+                
+                // console.log(
+                //     '🚀 ~ file: converters.js ~ line 999 ~ getListUseNum ~ target',
+                //     lastIndent,
+                //     indent,
+                //     target,
+                //     listStyle
+                // );
+                //都沒註冊過階層
                 if (target === undefined) {
                     tmpListMap.set(indent, [listStyle]);
                     item = item.nextSibling;
                     lastIndent = indent;
                     continue;
                 }
-                //如果跟上一個item同階層代表他們是同一個OL底下的item，因此同階層只記錄一次
-                if(lastIndent === indent){
+                //如果跟上一個item同階層代表他們是同一個OL底下的item，因此同階層只記錄一次，因此不紀錄到map裡面
+                if(lastIndent === indent || lastIndent > indent){
                     lastIndent = indent;
                     item = item.nextSibling;
                     continue;
                 }
+
                 target.push(listStyle);
                 tmpListMap.set(indent, target);
+
                 item = item.nextSibling;
                 lastIndent = indent;
                 continue;

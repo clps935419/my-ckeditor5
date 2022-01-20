@@ -22,8 +22,7 @@ import listStyleLowerRomanIcon from '../theme/icons/liststylelowerroman.svg';
 import listStyleUpperRomanIcon from '../theme/icons/liststyleupperroman.svg';
 import listStyleLowerLatinIcon from '../theme/icons/liststylelowerlatin.svg';
 import listStyleUpperLatinIcon from '../theme/icons/liststyleupperlatin.svg';
-import personalBlue from '../theme/icons/personal-blue.svg';
-import personal from '../theme/icons/personal.svg';
+
 import '../theme/liststyles.css';
 
 import { chinesFormatObj } from './chinesFormatData.js';
@@ -94,12 +93,27 @@ function createMyDropdownData(chinesFormatObj, t) {
     const tmpArr = [];
     for (let key of Object.keys(chinesFormatObj)) {
         const tmpFormatArr = chinesFormatObj[key].attr.map((item, index) => {
+			const reqSvgs = require.context(
+				`../theme/icons/format-icon/`,
+				true,
+				/\.svg$/
+			);
+			const paths = reqSvgs.keys();
+
+			const svgs = paths.filter((path) => {
+				if (path.indexOf(`${key}-${index}`)!==-1){
+					return path; 
+				}
+			});
+			const targetSvg = reqSvgs(svgs[0]);
             const tmpObj = {
                 label: t(chinesFormatObj[key].data[0]),
                 tooltip: t(item.replace(/T/, chinesFormatObj[key].data[0])),
                 type: `${key}-${index}`, //表示attr陣列中的第0個
-                icon: personal,
+                icon: targetSvg.default,
             };
+			// const tmpObj = test(key, index, item, svgs);
+
             return tmpObj;
         });
         tmpArr.push(...tmpFormatArr);

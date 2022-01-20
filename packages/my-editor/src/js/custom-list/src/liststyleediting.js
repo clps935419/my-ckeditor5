@@ -218,7 +218,6 @@ function upcastListItemStyle() {
 			if ( !listParent ) {
 				return;
 			}
-
 			const listStyle = listParent.getStyle( 'list-style-type' ) || DEFAULT_LIST_TYPE;
 			const listItem = data.modelRange.start.nodeAfter || data.modelRange.end.nodeBefore;
 			conversionApi.writer.setAttribute('listStyle', listStyle, listItem );
@@ -307,6 +306,16 @@ function fixListAfterIndentListCommand( editor ) {
 		const rootIndent = root.getAttribute( 'listIndent' );
 
 		const itemsToUpdate = changedItems.filter( item => item.getAttribute( 'listIndent' ) === rootIndent );
+		//目前所在的群組
+		const targetGroup = root.getAttribute('data-group');
+		//目前群組所有的資料
+		const groupDataArr = root.parent._children._nodes.filter((item)=>{
+			return item.getAttribute('data-group') === targetGroup;
+		});
+		//找出群組內同階層的資料
+		const sameIndentGroupArr = groupDataArr.filter((item)=>{
+			return item.getAttribute('listIndent') === rootIndent;
+		});
 		// A case where a few list items are indented must be checked separately
 		// since `getSiblingListItem()` returns the first changed element.
 		// ■ List item 1.
@@ -315,14 +324,24 @@ function fixListAfterIndentListCommand( editor ) {
 		// ■ List item 4.
 		//
 		// List items: `2` and `3` should be adjusted.
+
 		if ( root.previousSibling.getAttribute( 'listIndent' ) + 1 === rootIndent ) {
 			// valueToSet = root.previousSibling.getAttribute( 'listStyle' ) || DEFAULT_LIST_TYPE;
-			valueToSet = DEFAULT_LIST_TYPE;
+			//葳橋
+			if (sameIndentGroupArr.length>1) {
+				//判斷縮排後的元素的樣式，取所有階層的最後一個
+				//這邊是排除縮排後同階層的元素只有自己
+                valueToSet = sameIndentGroupArr[sameIndentGroupArr.length-1].getAttribute('listStyle');
+            } else {
+				//縮排後該階層只有自己的情況
+                valueToSet = DEFAULT_LIST_TYPE;
+            }
+			// valueToSet = DEFAULT_LIST_TYPE;
+
 		} else {
 			const previousSibling = getSiblingListItem( root.previousSibling, {
 				sameIndent: true, direction: 'backward', listIndent: rootIndent
 			} );
-
 			valueToSet = previousSibling.getAttribute( 'listStyle' );
 		}
 

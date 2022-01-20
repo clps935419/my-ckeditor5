@@ -106,7 +106,6 @@ export default class IndentCommand extends Command {
 					writer.setAttribute( 'listIndent', indent, item );
 				}
 			}
-
 			/**
 			 * Event fired by the {@link #execute} method.
 			 *
